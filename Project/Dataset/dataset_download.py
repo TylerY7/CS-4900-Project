@@ -1,6 +1,7 @@
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
 from torch.utils.data import random_split, DataLoader
+# subset_sampler or subset_random_sampler incase random split doesnt work
 
 def download_dataset():
     # Dowload full CIFAR-100 training dataset
@@ -21,6 +22,7 @@ def download_dataset():
     )
     '''
 
+
 def split_data(full_dataset):
     # get sizes for training set and validation set
     train_size = int(0.8 * len(full_dataset))
@@ -29,12 +31,11 @@ def split_data(full_dataset):
     # split dataset betwee training and validation
     train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
 
+    return train_dataset, val_dataset
     # create dataloaders for training and validation
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
-    return train_loader, val_loader
-
+def get_data_loaders(train_dataset, val_dataset, batch_size):
+    return DataLoader(train_dataset, batch_size=batch_size, shuffle=True), DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 if __name__ == '__main__':
     dataset = download_dataset()
