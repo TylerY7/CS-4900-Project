@@ -59,6 +59,22 @@ def get_classes(dataset):
     return dataset.classes
 
 if __name__ == '__main__':
+
+    if len(sys.argv) != 4:
+        print('Script usage: python(3) train.py [epochs:int] [batch_size:int] [learning_rate:float]\n')
+        print('epochs: nunmber of times to pass through training date')
+        print('batch_size: number of training samples per iteration')
+        print('learning rate: step size of optimization algorithm\n')
+        print('Example usage: python(3) train.py 10 32 (0.005/5e-3)')
+        sys.exit()
+    else:
+        epochs = int(sys.argv[1])
+        batch_size = int(sys.argv[2])
+        learning_rate = float(sys.argv[3])
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using Device: {device}')
+
     timestamp = str(datetime.now().timestamp())
 
     train_dataset = dataset_download.download_train_dataset()
@@ -66,9 +82,4 @@ if __name__ == '__main__':
 
     # Path for saving/loading model
     PATH = './models/model_' + timestamp + '.pt'
-
-    # Make these command line arguments later
-    epochs = 1 
-    batch_size = 32
-    learning_rate = 0.005
     train(epochs, batch_size, learning_rate, train_dataset, PATH)
