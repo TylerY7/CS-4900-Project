@@ -88,7 +88,7 @@ if __name__ == '__main__':
     # option to use positional arguments (must be entered in order when running script)
     parser.add_argument('epochs', nargs='?', type=int, help='(int) Number of training epochs')
     parser.add_argument('batch_size', nargs='?', type=int, help='(int) Batch size for training')
-    parser.add_argument('learning_rate', nargs='?', type=int, help='(float) Learning rate for optimization')
+    parser.add_argument('learning_rate', nargs='?', type=float, help='(float) Learning rate for optimization')
 
     # option to specify arguments (does not need to be ordered)
     parser.add_argument('--epochs', dest='epochs_flag', type=int, help='(int) Number of training epochs')
@@ -100,8 +100,11 @@ if __name__ == '__main__':
 
     # Set variables to positional arguments if used, otherwise use flag specified arguments
     epochs = args.epochs if args.epochs is not None else args.epochs_flag
-    batch_size = args.batch_size if args.batch_size is not None else args.batch_size
+    batch_size = args.batch_size if args.batch_size is not None else args.batch_flag
     learning_rate = args.learning_rate if args.learning_rate is not None else args.lr_flag
+
+    # print out args for debugging
+    print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}')
 
     if epochs is None or batch_size is None or learning_rate is None:
         print('\nError: Must provide epochs, batch_size, and learning_rate as either positional or flagged arguments')
@@ -121,4 +124,4 @@ if __name__ == '__main__':
     PATH = './models/model_' + timestamp + '.pt'
 
     # runs train function
-    train(args.epochs, args.batch_size, args.learning_rate, train_dataset, PATH)
+    train(epochs, batch_size, learning_rate, train_dataset, PATH)
