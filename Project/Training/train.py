@@ -12,12 +12,15 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import argparse
 
-# Import out modules
+# Import our modules
 import sys
+import os
 # Append folder to path so python can find the module to import
-sys.path.append('../Dataset/')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+dataset_path = os.path.join(base_dir, '..', 'Dataset')
+sys.path.append(dataset_path)
+print(f'Path: {dataset_path}')
 import dataset_download
-
 
 def train(epochs, batch_size, lr, dataset, path):
     # split dataset
@@ -29,7 +32,7 @@ def train(epochs, batch_size, lr, dataset, path):
 
     # Instantiate model
     net = Net(len(get_classes(dataset)))
-    wrtier = SummaryWriter('runs/CIFAR100' + timestamp)
+    writer = SummaryWriter('runs/CIFAR100' + timestamp)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
 
