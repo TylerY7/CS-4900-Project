@@ -85,13 +85,30 @@ if __name__ == '__main__':
     # create parser object
     parser = argparse.ArgumentParser(description='Hyperparameters for training model.')
 
-    # add parser arguments
-    parser.add_argument('--epochs', type=int, required=True, help='(int) Number of training epochs')
-    parser.add_argument('--batch_size', type=int, required=True, help='(int) Batch size for training')
-    parser.add_argument('--learning_rate', type=float, required=True, help='(float) Learning rate for optimization')
+    # option to use positional arguments (must be entered in order when running script)
+    parser.add_argument('epochs', nargs='?', type=int, help='(int) Number of training epochs')
+    parser.add_argument('batch_size', nargs='?', type=int, help='(int) Batch size for training')
+    parser.add_argument('learning_rate', nargs='?', type=int, help='(float) Learning rate for optimization')
+
+    # option to specify arguments (does not need to be ordered)
+    parser.add_argument('--epochs', dest='epochs_flag', type=int, help='(int) Number of training epochs')
+    parser.add_argument('--batch_size', dest='batch_flag', type=int, help='(int) Batch size for training')
+    parser.add_argument('--learning_rate', dest='lr_flag', type=float, help='(float) Learning rate for optimization')
 
     # get command line arguments
     args = parser.parse_args()
+
+    # Set variables to positional arguments if used, otherwise use flag specified arguments
+    epochs = args.epochs if args.epochs is not None else args.epochs_flag
+    batch_size = args.batch_size if args.batch_size is not None else args.batch_size
+    learning_rate = args.learning_rate if args.learning_rate is not None else args.lr_flag
+
+    if epochs is None or batch_size is None or learning_rate is None:
+        print('\nError: Must provide epochs, batch_size, and learning_rate as either positional or flagged arguments')
+        print('\nExample script usage:')
+        print('\tPositional arguments: python(3) train.py 5 32 0.005')
+        print('\tFlagged arguments: python(3) train.py --epochs 5 --batch_size 32 --learning_rate 0.005\n')
+        sys.exit(1)
 
     # generate timestamp for filename when saving
     timestamp = str(datetime.now().timestamp())
