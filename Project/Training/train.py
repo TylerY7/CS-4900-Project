@@ -10,6 +10,7 @@ from datetime import datetime
 from model_cnn import Net
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
+import argparse
 
 # Import out modules
 import sys
@@ -60,26 +61,47 @@ def get_classes(dataset):
 
 if __name__ == '__main__':
 
+    # ensure user has cuda, otherwise use CPU
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f'Using Device: {device}')
+
+    '''
+    ###
+    Choose which style of CL arguments we prefer
+    ###
+
     if len(sys.argv) != 4:
         print('Script usage: python(3) train.py [epochs:int] [batch_size:int] [learning_rate:float]\n')
-        print('epochs: nunmber of times to pass through training date')
-        print('batch_size: number of training samples per iteration')
-        print('learning rate: step size of optimization algorithm\n')
+        print('epochs: Number of training epochs')
+        print('batch_size: Batch size for training')
+        print('learning rate: Learning rate for optimization\n')
         print('Example usage: python(3) train.py 10 32 (0.005/5e-3)')
         sys.exit()
     else:
         epochs = int(sys.argv[1])
         batch_size = int(sys.argv[2])
         learning_rate = float(sys.argv[3])
+    '''
+    # create parser object
+    parser = argparse.ArgumentParser(description='Hyperparameters for training model.')
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f'Using Device: {device}')
+    # add parser arguments
+    parser.add_argument('--epochs', type=int, required=True, help='(int) Number of training epochs')
+    parser.add_argument('--batch_size', type=int, required=True, help='(int) Batch size for training')
+    parser.add_argument('--learning_rate', type=float, required=True, help='(float) Learning rate for optimization')
 
+    # get command line arguments
+    args = parser.parse_args()
+
+    # generate timestamp for filename when saving
     timestamp = str(datetime.now().timestamp())
 
+    # Downloades datasets if not already installed
     train_dataset = dataset_download.download_train_dataset()
     test_dataset = dataset_download.download_test_dataset()
 
     # Path for saving/loading model
     PATH = './models/model_' + timestamp + '.pt'
-    train(epochs, batch_size, learning_rate, train_dataset, PATH)
+
+    # runs train function
+    train(args.epochs, args.batch_size, args.learning_rate, train_dataset, PATH)
