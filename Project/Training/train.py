@@ -11,15 +11,14 @@ from model_cnn import Net
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import argparse
-
-# Import our modules
 import sys
 import os
+
 # Append folder to path so python can find the module to import
 base_dir = os.path.dirname(os.path.abspath(__file__))
 dataset_path = os.path.join(base_dir, '..', 'Dataset')
 sys.path.append(dataset_path)
-print(f'Path: {dataset_path}')
+
 import dataset_download
 
 def train(epochs, batch_size, lr, dataset, path):
@@ -27,7 +26,7 @@ def train(epochs, batch_size, lr, dataset, path):
     train_dataset, val_dataset = dataset_download.split_data(dataset)
 
     # Create training set data loader
-    train_loader = dataset_download.get_data_loader(train_dataset, 1)
+    train_loader = dataset_download.get_data_loader(train_dataset, batch_size)
     size = len(train_loader.dataset)
 
     # Instantiate model
@@ -39,22 +38,40 @@ def train(epochs, batch_size, lr, dataset, path):
     # training loop
     for epoch in range(epochs):
         running_loss = 0.0
+        correct = 0
+        total = 0
+
         for i, data in enumerate(train_loader):
+            # Loads data into device being used for training
             inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+
+            if epoch == 0 and i == 0:
+                img_grid = torchvision.utils.make_grid(inputs)
+                writer.add_image('input_images', img_grid)
+
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-            running_loss += loss.item()
-            
-            batch = i
-            if batch % 100 == 0:
-                loss, current = loss.item(), batch * batch_size + len(data[0])
-                print(f'loss: {loss:>7f} [{current:>5d}/{size:>5d}]')
 
-        print(f'[{epoch + 1}] loss: {running_loss / len(trainloader):.3f}')
-        writer.add_scalar('training loss', running_loss / len(trainloader), epoch)
+            running_loss += loss.item()
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+            if i % 100 == 0:
+                print(f'loss: {loss.item():>7f} [{i * batch_size:>5d}/{size:>5d}]')
+            
+            avg_loss = running_loss / len(train_loader)
+            accuracy = 100 * (correct / total)
+            print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
+
+            writer.add_scalar('Training loss', avg_loss, epoch)
+            writer.add_scalar('Training accruacy', accuracy, epoch)
+            writer.add_scalar('Learning Rate', lr, epoch)
+
     print('Finished Training')
     writer.close()
     torch.save(net.state_dict(), path)
@@ -68,23 +85,6 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using Device: {device}')
 
-    '''
-    ###
-    Choose which style of CL arguments we prefer
-    ###
-
-    if len(sys.argv) != 4:
-        print('Script usage: python(3) train.py [epochs:int] [batch_size:int] [learning_rate:float]\n')
-        print('epochs: Number of training epochs')
-        print('batch_size: Batch size for training')
-        print('learning rate: Learning rate for optimization\n')
-        print('Example usage: python(3) train.py 10 32 (0.005/5e-3)')
-        sys.exit()
-    else:
-        epochs = int(sys.argv[1])
-        batch_size = int(sys.argv[2])
-        learning_rate = float(sys.argv[3])
-    '''
     # create parser object
     parser = argparse.ArgumentParser(description='Hyperparameters for training model.')
 
