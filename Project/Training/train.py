@@ -31,15 +31,23 @@ def train(epochs, batch_size, lr, dataset, path):
 
     # Instantiate model
     net = Net(len(get_classes(dataset)))
+    net.to(device)
     writer = SummaryWriter('runs/CIFAR100' + timestamp)
     criterion = nn.CrossEntropyLoss()
+    print(f'learning_rate={lr}')
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
+
+    # Learning rate scheduler
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
 
     # training loop
     for epoch in range(epochs):
         running_loss = 0.0
         correct = 0
         total = 0
+
+        # prints for debugging
+        print(f"Epoch {epoch + 1} - Current LR: {scheduler.get_last_lr()[0]}")
 
         for i, data in enumerate(train_loader):
             # Loads data into device being used for training
@@ -63,14 +71,21 @@ def train(epochs, batch_size, lr, dataset, path):
 
             if i % 100 == 0:
                 print(f'loss: {loss.item():>7f} [{i * batch_size:>5d}/{size:>5d}]')
-            
-            avg_loss = running_loss / len(train_loader)
-            accuracy = 100 * (correct / total)
-            print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
+        
+        avg_loss = running_loss / len(train_loader)
+        accuracy = 100 * (correct / total)
+        print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
-            writer.add_scalar('Training loss', avg_loss, epoch)
-            writer.add_scalar('Training accruacy', accuracy, epoch)
-            writer.add_scalar('Learning Rate', lr, epoch)
+        writer.add_scalar('Training loss', avg_loss, epoch)
+        writer.add_scalar('Training accruacy', accuracy, epoch)
+        # get_last_lr() returns list of len=1 containing LR used for this epoch
+        writer.add_scalar('Learning Rate', scheduler.get_last_lr()[0], epoch)
+
+        # adjust LR
+        #scheduler.step()
+
+        # ensure collected data is written to disc after each epoch
+        writer.flush()
 
     print('Finished Training')
     writer.close()
