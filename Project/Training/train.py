@@ -15,7 +15,12 @@ import sys
 import os
 
 # Append folder to path so python can find the module to import
+
 base_dir = os.path.dirname(os.path.abspath(__file__))
+
+runs_dir = os.path.join(base_dir, '..', 'runs/CIFAR100')
+models_dir = os.path.join(base_dir, '..', 'models')
+
 dataset_path = os.path.join(base_dir, '..', 'Dataset')
 sys.path.append(dataset_path)
 
@@ -32,7 +37,7 @@ def train(epochs, batch_size, lr, dataset, path):
     # Instantiate model
     net = Net(len(get_classes(dataset)))
     net.to(device)
-    writer = SummaryWriter('runs/CIFAR100' + timestamp)
+    writer = SummaryWriter(runs_dir + timestamp)
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
@@ -139,7 +144,7 @@ if __name__ == '__main__':
     test_dataset = dataset_download.download_test_dataset()
 
     # Path for saving/loading model
-    PATH = './models/model_' + timestamp + '.pt'
+    PATH = models_dir + '/model_' + timestamp + '.pt'
 
     # runs train function
     train(epochs, batch_size, learning_rate, train_dataset, PATH)
