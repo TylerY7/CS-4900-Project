@@ -1,10 +1,10 @@
-import os
 import webbrowser
 from subprocess import Popen, DEVNULL
 import time
+import os
 
-# update this later to make sure script can run from any directory and find the correct path
-log_dir = os.path.join(os.getcwd(), 'runs')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+log_dir = os.path.join(base_dir, 'runs')
 
 # make sure path can be found, otherwise exit
 if not os.path.exists(log_dir):
