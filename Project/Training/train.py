@@ -1,4 +1,5 @@
 # Import necessary modules
+import argparse
 import numpy as np
 import torch
 import torchvision
@@ -28,7 +29,7 @@ def train(epochs, batch_size, lr, dataset, path):
 
     # Instantiate model
     net = Net(len(get_classes(dataset)))
-    wrtier = SummaryWriter('runs/CIFAR100' + timestamp)
+    writer = SummaryWriter('runs/CIFAR100' + timestamp)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
 
@@ -59,16 +60,22 @@ def get_classes(dataset):
     return dataset.classes
 
 if __name__ == '__main__':
+    # Argument parser
+    parser = argparse.ArgumentParser(description="Train a CNN model on CIFAR-100")
+
+    parser.add_argument('--epochs', type=int, default=10, help="Number of training epochs")
+    parser.add_argument('--batch_size', type=int, default=32, help="Batch size for training")
+    parser.add_argument('--lr', type=float, default=0.005, help="Learning rate")
+    parser.add_argument('--model', type=str, default="cnn", choices=["cnn"], help="Model type to use")
+
+    args = parser.parse_args()
+
     timestamp = str(datetime.now().timestamp())
 
     train_dataset = dataset_download.download_train_dataset()
     test_dataset = dataset_download.download_test_dataset()
 
     # Path for saving/loading model
-    PATH = './models/model_' + timestamp + '.pt'
+    PATH = f'./models/{args.model}_model_{timestamp}.pt'
 
-    # Make these command line arguments later
-    epochs = 1 
-    batch_size = 32
-    learning_rate = 0.005
-    train(epochs, batch_size, learning_rate, train_dataset, PATH)
+    train(args.epochs, args.batch_size, args.lr, train_dataset, PATH)
