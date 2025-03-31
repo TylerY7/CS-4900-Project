@@ -15,21 +15,26 @@ import argparse
 import sys
 import os
 
+# Import for the linear model for training
+'''
+
+from linear_model import LinearModel
+
+'''
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
 runs_dir = os.path.join(base_dir, '..', 'runs/CIFAR100')
 models_dir = os.path.join(base_dir, '..', 'models')
-
 dataset_path = os.path.join(base_dir, '..', 'Dataset')
 sys.path.append(dataset_path)
 
 import dataset_download
 
-
+# Created a dictionary to add more models
 MODEL_MAP = {
     "Net": Net,
+    # 'LinearModel': LinearModel
 }
 
 def train(epochs, batch_size, lr, dataset, path):
@@ -40,7 +45,10 @@ def train(epochs, batch_size, lr, dataset, path):
     train_loader = dataset_download.get_data_loader(train_dataset, batch_size)
     size = len(train_loader.dataset)
 
-    # Instantiate model
+    # (Dynamically) Instantiate model
+    model_class = MODEL_MAP[model_name]
+    # For later use:
+    # net = model_class(output_classes)
     net = Net(len(get_classes(dataset)))
     net.to(device)
     writer = SummaryWriter(runs_dir + timestamp)
@@ -125,7 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', dest='lr_flag', type=float, help='(float) Learning rate for optimization')
 
     # New flags for model and output classes
-    parser.add_argument('--model', dest='model', type=str, default='Net', choices=MODEL_MAP.keys(), help='(str) Model name')
+    parser.add_argument('--model', dest='model', type=str, default='Net', choices=MODEL_MAP.keys(), help='(str) Model name (Net or LinearModel, default: Net)')
     parser.add_argument('--output_classes', dest='model', type=int, choices=[20,100], default=100, help='(int) Number of output classes (20 or 100)')
 
     # get command line arguments
@@ -159,4 +167,4 @@ if __name__ == '__main__':
     PATH = models_dir + '/model_' + timestamp + '.pt'
 
     # runs train function
-    train(epochs, batch_size, learning_rate, train_dataset, PATH)
+    train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, output_classes)
