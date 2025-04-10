@@ -1,4 +1,5 @@
 # Import necessary modules
+import argparse
 import numpy as np
 import torch
 import torchvision
@@ -14,17 +15,27 @@ import argparse
 import sys
 import os
 
+# Import for the linear model for training
+'''
+
+from linear_model import LinearModel
+
+'''
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
 runs_dir = os.path.join(base_dir, '..', 'runs/CIFAR100')
 models_dir = os.path.join(base_dir, '..', 'models')
-
 dataset_path = os.path.join(base_dir, '..', 'Dataset')
 sys.path.append(dataset_path)
 
 import dataset_download
+
+# Created a dictionary to add more models
+MODEL_MAP = {
+    "Net": Net,
+    # 'LinearModel': LinearModel
+}
 
 def train(epochs, batch_size, lr, dataset, path):
     # split dataset
@@ -34,7 +45,10 @@ def train(epochs, batch_size, lr, dataset, path):
     train_loader = dataset_download.get_data_loader(train_dataset, batch_size)
     size = len(train_loader.dataset)
 
-    # Instantiate model
+    # (Dynamically) Instantiate model
+    model_class = MODEL_MAP[model_name]
+    # For later use:
+    # net = model_class(output_classes)
     net = Net(len(get_classes(dataset)))
     net.to(device)
     writer = SummaryWriter(runs_dir + timestamp)
@@ -82,7 +96,7 @@ def train(epochs, batch_size, lr, dataset, path):
         print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
         writer.add_scalar('Training loss', avg_loss, epoch)
-        writer.add_scalar('Training accruacy', accuracy, epoch)
+        writer.add_scalar('Training accuracy', accuracy, epoch)
         # get_last_lr() returns list of len=1 containing LR used for this epoch
         writer.add_scalar('Learning Rate', scheduler.get_last_lr()[0], epoch)
 
@@ -118,6 +132,10 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', dest='batch_flag', type=int, help='(int) Batch size for training')
     parser.add_argument('--learning_rate', dest='lr_flag', type=float, help='(float) Learning rate for optimization')
 
+    # New flags for model and output classes
+    parser.add_argument('--model', dest='model', type=str, default='Net', choices=MODEL_MAP.keys(), help='(str) Model name (Net or LinearModel, default: Net)')
+    parser.add_argument('--output_classes', dest='model', type=int, choices=[20,100], default=100, help='(int) Number of output classes (20 or 100)')
+
     # get command line arguments
     args = parser.parse_args()
 
@@ -125,9 +143,11 @@ if __name__ == '__main__':
     epochs = args.epochs if args.epochs is not None else args.epochs_flag
     batch_size = args.batch_size if args.batch_size is not None else args.batch_flag
     learning_rate = args.learning_rate if args.learning_rate is not None else args.lr_flag
+    model_name = args.model
+    output_classes = args.output_classes
 
     # print out args for debugging
-    print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}')
+    print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}\nmodel=P{model_name}\noutput_classes={output_classes}')
 
     if epochs is None or batch_size is None or learning_rate is None:
         print('\nError: Must provide epochs, batch_size, and learning_rate as either positional or flagged arguments')
@@ -139,7 +159,7 @@ if __name__ == '__main__':
     # generate timestamp for filename when saving
     timestamp = str(datetime.now().timestamp())
 
-    # Downloades datasets if not already installed
+    # Downloads datasets if not already installed
     train_dataset = dataset_download.download_train_dataset()
     test_dataset = dataset_download.download_test_dataset()
 
@@ -147,4 +167,4 @@ if __name__ == '__main__':
     PATH = models_dir + '/model_' + timestamp + '.pt'
 
     # runs train function
-    train(epochs, batch_size, learning_rate, train_dataset, PATH)
+    train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, output_classes)
