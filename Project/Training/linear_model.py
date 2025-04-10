@@ -15,7 +15,7 @@ class LinearModel(nn.Module):
         x = self.fc2(x)
         return x
 
-    def __init__(self, num_classes): 
+    def __init__(self, num_classes):  
         super(LinearModel, self).__init__()
         # Flatten the input image (3x32x32) to 1D (3072)
         self.flatten = nn.Flatten()
