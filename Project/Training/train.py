@@ -37,7 +37,7 @@ MODEL_MAP = {
     # 'LinearModel': LinearModel
 }
 
-def train(epochs, batch_size, lr, dataset, path):
+def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     # split dataset
     train_dataset, val_dataset = dataset_download.split_data(dataset)
 
