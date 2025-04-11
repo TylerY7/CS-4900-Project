@@ -55,6 +55,9 @@ def split_data(full_dataset):
 def get_data_loader(train_dataset, batch_size):
     return DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
+def get_validation_data_loader(val_dataset, batch_size):
+    return DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
 if __name__ == '__main__':
     dataset = download_train_dataset()
     train_dataset, val_dataset = split_data(dataset)

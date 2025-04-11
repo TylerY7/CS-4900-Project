@@ -46,7 +46,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     size = len(train_loader.dataset)
 
     # Create validation set data loader
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size, shuffle=False)
+    val_loader = dataset_download.get_validation_data_loader(val_dataset, batch_size)
 
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
