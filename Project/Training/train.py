@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     # New flags for model and output classes
     parser.add_argument('--model', dest='model', type=str, default='Net', choices=MODEL_MAP.keys(), help='(str) Model name (Net or LinearModel, default: Net)')
-    parser.add_argument('--output_classes', dest='model', type=int, choices=[20,100], default=100, help='(int) Number of output classes (20 or 100)')
+    parser.add_argument('--output_classes', dest='output_classes_flag', type=int, choices=[20,100], default=100, help='(int) Number of output classes (20 or 100)')
 
     # get command line arguments
     args = parser.parse_args()
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     batch_size = args.batch_size if args.batch_size is not None else args.batch_flag
     learning_rate = args.learning_rate if args.learning_rate is not None else args.lr_flag
     model_name = args.model
-    output_classes = args.output_classes
+    output_classes = args.output_classes_flag
 
     # print out args for debugging
     print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}\nmodel=P{model_name}\noutput_classes={output_classes}')
