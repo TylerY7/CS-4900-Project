@@ -45,6 +45,9 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     train_loader = dataset_download.get_data_loader(train_dataset, batch_size)
     size = len(train_loader.dataset)
 
+    # Create validation set data loader
+    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size, shuffle=False)
+
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
     # For later use:
@@ -59,11 +62,16 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     # Learning rate scheduler
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
 
+    # used to compare and find lowest validation loss
+    lowest_v_loss = float('inf')
+    
     # training loop
     for epoch in range(epochs):
         running_loss = 0.0
         correct = 0
         total = 0
+
+        net.train(True)
 
         # prints for debugging
         print(f"Epoch {epoch + 1} - Current LR: {scheduler.get_last_lr()[0]}")
@@ -95,6 +103,9 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         accuracy = 100 * (correct / total)
         print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
+        # function that performs validation
+        lowest_v_loss = validate(epoch, net, writer, val_loader, avg_loss, lowest_v_loss)
+
         writer.add_scalar('Training loss', avg_loss, epoch)
         writer.add_scalar('Training accuracy', accuracy, epoch)
         # get_last_lr() returns list of len=1 containing LR used for this epoch
@@ -109,6 +120,40 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     print('Finished Training')
     writer.close()
     torch.save(net.state_dict(), path)
+
+def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
+    # sets model to evalution mode
+    model.eval()
+
+    criterion = nn.CrossEntropyLoss()
+
+    running_v_loss = 0.0
+
+    # performs validation
+    with torch.no_grad():
+        for i, v_data in enumerate(val_loader):
+            v_inputs, v_labels = v_data
+            v_inputs, v_labels = v_inputs.to(device), v_labels.to(device)
+            v_outputs = model(v_inputs)
+            v_loss = criterion(v_outputs, v_labels)
+            running_v_loss += v_loss.item()
+    
+    avg_v_loss = running_v_loss / len(val_loader)
+        
+    # displays/compares with average training loss
+    print(f"Avg training loss: {avg_loss:>5f}   vs   Avg val loss: {avg_v_loss:>5f}")
+
+    # records and graphs training vs validation loss
+    writer.add_scalars("Training vs. validation loss", {"Training": avg_loss, "Validation": avg_v_loss}, epoch)
+
+    # updates value of lowest_v_loss
+    return find_lowest_v_loss(avg_v_loss, lowest_v_loss)
+
+# finds lowest validation loss
+def find_lowest_v_loss(avg_v_loss, lowest_v_loss):
+    if avg_v_loss < lowest_v_loss:
+            lowest_v_loss = avg_v_loss
+    return lowest_v_loss
 
 def get_classes(dataset):
     return dataset.classes
