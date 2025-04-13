@@ -8,7 +8,6 @@ class CIFAR100Custom(CIFAR100):
         super().__init__(root=root, train=train, transform=transform,
                          target_transform=target_transform, download=download)
 
-        # Fix path (don't double-prefix with root again)
         filename = self.train_list[0][0] if train else self.test_list[0][0]
         filepath = os.path.join(self.root, self.base_folder, filename)
 

@@ -40,6 +40,18 @@ MODEL_MAP = {
 }
 
 def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
+    """
+    Function for training the model
+
+    Args:
+        epochs (int): Number of training epochs
+        batch_size (int): Batch size for training
+        lr (float): Learning rate for optimization
+        dataset (string): CIFAR100
+        path (string): path to save trained model
+        model_name (string): type of model (CNN or Linear)
+        output_classes (int): 20 (super classes) or 100 (classes)
+    """
     # split dataset
     train_dataset, val_dataset = dataset_download.split_data(dataset)
 
@@ -118,6 +130,20 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     torch.save(net.state_dict(), path)
 
 def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
+    """
+    Measures model's training performance
+
+    Args:
+        epochs (int): Number of training epochs
+        model (string): CNN or linear model
+        writer (SummaryWrtier): For saving data in a tensor
+        val_loader (DataLoader): Loads datasets for CIFAR100
+        avg_loss (float): Average loss during training
+        lowest_v_loss (float): Used to compare and find lowest validation loss
+
+    Returns:
+        float: returns value returned by find_lowest_v_loss
+    """
     # sets model to evalution mode
     model.eval()
 
@@ -147,6 +173,15 @@ def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
 
 # finds lowest validation loss
 def find_lowest_v_loss(avg_v_loss, lowest_v_loss):
+    """_summary_
+
+    Args:
+        avg_v_loss (float): current average loss found during validation
+        lowest_v_loss (float): current lowest loss found during validation
+
+    Returns:
+        float: lowest loss, or average loss replaces current lowest loss if it is lower
+    """
     if avg_v_loss < lowest_v_loss:
             lowest_v_loss = avg_v_loss
     return lowest_v_loss
