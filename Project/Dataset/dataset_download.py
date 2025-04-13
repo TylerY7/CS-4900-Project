@@ -26,7 +26,7 @@ def download_train_dataset():
     )
     return full_dataset
 
-def download_test_dataset():
+def download_test_dataset(transform = None):
         #Download if not already downloaded
     if is_dataset_downloaded():
         print(f"Dataset already exists at: {DATASET_PATH}")
@@ -37,7 +37,7 @@ def download_test_dataset():
         root='./data',
         train=False,
         download=not is_dataset_downloaded(),
-        transform=ToTensor()
+        transform=ToTensor() if transform is None else transform
     )
     return test_data
 
@@ -54,6 +54,9 @@ def split_data(full_dataset):
 
 def get_data_loader(train_dataset, batch_size):
     return DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+def get_validation_data_loader(val_dataset, batch_size):
+    return DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 if __name__ == '__main__':
     dataset = download_train_dataset()

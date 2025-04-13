@@ -2,9 +2,17 @@ import torch
 import torchvision.transforms as transforms
 import torchvision
 from torch.utils.data import DataLoader
-from model_cnn import Net
+from Training.model_cnn import Net
 import sys
 from datetime import datetime
+import os
+
+# Append folder to path so python can find the module to import
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+dataset_path = os.path.join(base_dir, 'Dataset')
+sys.path.append(dataset_path)
+
 import dataset_download
 import argparse
 
