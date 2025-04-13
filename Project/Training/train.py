@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import torchvision
 from torchvision.utils import save_image
+from torchvision import transforms
 from torch.nn import functional as F
 import torch.optim as optim
 from torch import nn
@@ -30,6 +31,7 @@ dataset_path = os.path.join(base_dir, '..', 'Dataset')
 sys.path.append(dataset_path)
 
 import dataset_download
+from dataset_download_superclass import CIFAR100Custom
 
 # Created a dictionary to add more models
 MODEL_MAP = {
@@ -52,7 +54,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     model_class = MODEL_MAP[model_name]
     # For later use:
     # net = model_class(output_classes)
-    net = Net(len(get_classes(dataset)))
+    net = Net(output_classes)
     net.to(device)
     writer = SummaryWriter(runs_dir + timestamp)
     criterion = nn.CrossEntropyLoss()
@@ -72,9 +74,6 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         total = 0
 
         net.train(True)
-
-        # prints for debugging
-        print(f"Epoch {epoch + 1} - Current LR: {scheduler.get_last_lr()[0]}")
 
         for i, data in enumerate(train_loader):
             # Loads data into device being used for training
@@ -110,9 +109,6 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         writer.add_scalar('Training accuracy', accuracy, epoch)
         # get_last_lr() returns list of len=1 containing LR used for this epoch
         writer.add_scalar('Learning Rate', scheduler.get_last_lr()[0], epoch)
-
-        # adjust LR
-        #scheduler.step()
 
         # ensure collected data is written to disc after each epoch
         writer.flush()
@@ -155,9 +151,6 @@ def find_lowest_v_loss(avg_v_loss, lowest_v_loss):
             lowest_v_loss = avg_v_loss
     return lowest_v_loss
 
-def get_classes(dataset):
-    return dataset.classes
-
 if __name__ == '__main__':
 
     # ensure user has cuda, otherwise use CPU
@@ -172,7 +165,7 @@ if __name__ == '__main__':
     parser.add_argument('batch_size', nargs='?', type=int, help='(int) Batch size for training')
     parser.add_argument('learning_rate', nargs='?', type=float, help='(float) Learning rate for optimization')
     parser.add_argument('model', nargs='?', type=str, choices=MODEL_MAP.keys(), help='(str) type of model (CNN or Linear)')
-    parser.add_argument('outpuat_classes', nargs='?', type=int, choices=[20, 100], help='(int) 20 (super classes) or 100 (classes)')
+    parser.add_argument('output_classes', nargs='?', type=int, choices=[20, 100], help='(int) 20 (super classes) or 100 (classes)')
 
     # option to specify arguments (does not need to be ordered)
     parser.add_argument('--epochs', dest='epochs_flag', type=int, help='(int) Number of training epochs')
@@ -191,10 +184,10 @@ if __name__ == '__main__':
     batch_size = args.batch_size if args.batch_size is not None else args.batch_flag
     learning_rate = args.learning_rate if args.learning_rate is not None else args.lr_flag
     model_name = args.model if args.model is not None else args.model_flag
-    output_classes = args.output_classes if args.output_classes is not None else args.output_classes_flag
+    num_classes = args.output_classes if args.output_classes is not None else args.output_classes_flag
 
     # print out args for debugging
-    print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}\nmodel=P{model_name}\noutput_classes={output_classes}')
+    print(f'epochs={epochs}\nbatch_size={batch_size}\nlr={learning_rate}\nmodel=P{model_name}\noutput_classes={num_classes}')
 
     if epochs is None or batch_size is None or learning_rate is None:
         print('\nError: Must provide epochs, batch_size, and learning_rate as either positional or flagged arguments')
@@ -206,12 +199,16 @@ if __name__ == '__main__':
     # generate timestamp for filename when saving
     timestamp = str(datetime.now().timestamp())
 
+    label_type = 'fine' if num_classes == 100 else 'coarse'
+
     # Downloads datasets if not already installed
-    train_dataset = dataset_download.download_train_dataset()
-    test_dataset = dataset_download.download_test_dataset()
+    train_dataset = CIFAR100Custom(root='./data', train=True, download=True,
+                               transform=transforms.ToTensor(), label_type=label_type)
+    test_dataset = CIFAR100Custom(root='./data', train=False, download=True,
+                               transform=transforms.ToTensor(), label_type=label_type)
 
     # Path for saving/loading model
     PATH = models_dir + '/model_' + timestamp + '.pt'
 
     # runs train function
-    train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, output_classes)
+    train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, num_classes)
