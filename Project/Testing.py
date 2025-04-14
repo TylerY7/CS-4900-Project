@@ -6,7 +6,7 @@ from Training.model_cnn import Net
 import sys
 from datetime import datetime
 import os
-from sklearn.metrics import precision_score
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Append folder to path so python can find the module to import
 
@@ -31,11 +31,38 @@ def compute_metrics(correct_per_class, total_per_class, classes):
             acc = 0.0
         print(f'{cls}: {acc:.2f}%')
 
-def compute_precision(precision_matrix, classes):
+def compute_precision(all_labels, all_predictions, classes):
+    """
+    Function to display precision score per class.
+    Shows class names along with precision score associated with the class.
+    """
     print("---------------------\n\nPer-Class Precision:")
+    precision_matrix = precision_score(all_labels, all_predictions, average = None, zero_division=0)
     for i, cls in enumerate(classes):
         precision = precision_matrix[i]
         print(f'{cls}: {precision:.4f}')
+
+def compute_recall(all_labels, all_predictions, classes):
+    """
+    Function to display recall score per class.
+    Shows class names along with recall score associated with the class.
+    """
+    print("---------------------\n\nPer-Class Recall:")
+    recall_matrix = recall_score(all_labels, all_predictions, average=None, zero_division=0)
+    for i, cls in enumerate(classes):
+        recall = recall_matrix[i]
+        print(f'{cls}: {recall:.4f}')
+
+def compute_f1(all_labels, all_predictions, classes):
+    """
+    Function to display f1 score per class.
+    Shows class names along with f1 score associated with the class.
+    """
+    print("---------------------\n\nPer-Class f1:")
+    f1_matrix = f1_score(all_labels, all_predictions, average=None, zero_division=0)
+    for i, cls in enumerate(classes):
+        f1 = f1_matrix[i]
+        print(f'{cls}: {f1:.4f}')
 
 
 def test(model_path, batch_size):
@@ -91,9 +118,14 @@ def test(model_path, batch_size):
     # Compute per-class accuracy
     compute_metrics(correct_per_class, total_per_class, classes)
 
-    # computes precision
-    precision_matrix = precision_score(all_labels, all_predictions, average = None, zero_division=0)
-    compute_precision(precision_matrix, classes)
+    # computes precision score per class
+    compute_precision(all_labels, all_predictions, classes)
+
+    # computes recall score per class
+    compute_recall(all_labels, all_predictions, classes)
+
+    # computes f1 score per class
+    compute_f1(all_labels, all_predictions, classes)
 
 
 if __name__ == '__main__':
