@@ -6,6 +6,7 @@ from Training.model_cnn import Net
 import sys
 from datetime import datetime
 import os
+from sklearn.metrics import precision_score
 
 # Append folder to path so python can find the module to import
 
@@ -29,6 +30,12 @@ def compute_metrics(correct_per_class, total_per_class, classes):
         else:
             acc = 0.0
         print(f'{cls}: {acc:.2f}%')
+
+def compute_precision(precision_matrix, classes):
+    print("---------------------\n\nPer-Class Precision:")
+    for i, cls in enumerate(classes):
+        precision = precision_matrix[i]
+        print(f'{cls}: {precision:.4f}')
 
 
 def test(model_path, batch_size):
@@ -55,12 +62,18 @@ def test(model_path, batch_size):
     total = 0
     correct_per_class = [0] * len(classes)
     total_per_class = [0] * len(classes)
+
+    all_predictions = []
+    all_labels = []
     
     with torch.no_grad():
         for data in test_loader:
             images, labels = data
             outputs = net(images)
             _, predicted = torch.max(outputs, 1)
+
+            all_labels.extend(labels.cpu().numpy())
+            all_predictions.extend(predicted.cpu().numpy())
             
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
@@ -77,7 +90,11 @@ def test(model_path, batch_size):
     
     # Compute per-class accuracy
     compute_metrics(correct_per_class, total_per_class, classes)
-    
+
+    # computes precision
+    precision_matrix = precision_score(all_labels, all_predictions, average = None, zero_division=0)
+    compute_precision(precision_matrix, classes)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test a trained CNN model.')
