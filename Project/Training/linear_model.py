@@ -2,19 +2,6 @@ import torch
 import torch.nn as nn
 
 class LinearModel(nn.Module):
-    def __init__(self, num_classes):
-        super(LinearModel, self).__init__()
-        # Flatten the input image (3x32x32) to 1D (3072)
-        self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(3 * 32 * 32, 512)  # Fully connected layer with 512 units
-        self.fc2 = nn.Linear(512, num_classes) 
-    
-    def forward(self, x):
-        x = self.flatten(x)
-        x = torch.relu(self.fc1(x))  # Apply ReLU activation
-        x = self.fc2(x)
-        return x
-
     def __init__(self, num_classes):  
         super(LinearModel, self).__init__()
         # Flatten the input image (3x32x32) to 1D (3072)
