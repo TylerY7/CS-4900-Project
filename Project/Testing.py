@@ -17,6 +17,23 @@ sys.path.append(dataset_path)
 import dataset_download
 import argparse
 
+class_to_superclass = {
+        'apple': 'fruit', 'orange': 'fruit', 'banana': 'fruit', 'pineapple': 'fruit', 'grape': 'fruit',
+        'peach': 'fruit', 'strawberry': 'fruit', 'cherry': 'fruit', 'lemon': 'fruit', 'pear': 'fruit',
+        
+        'aquarium_fish': 'fish', 'flatfish': 'fish', 'ray': 'fish', 'shark': 'fish', 'trout': 'fish',
+        
+        'orchid': 'flower', 'poppy': 'flower', 'rose': 'flower', 'sunflower': 'flower', 'tulip': 'flower',
+        
+        'bee': 'insect', 'beetle': 'insect', 'butterfly': 'insect', 'cockroach': 'insect', 'dragonfly': 'insect',
+        
+        'bear': 'mammal', 'cat': 'mammal', 'cow': 'mammal', 'dog': 'mammal', 'horse': 'mammal', 'elephant': 'mammal',
+        'kangaroo': 'mammal', 'lion': 'mammal', 'tiger': 'mammal', 'wolf': 'mammal',
+        
+        'rocket': 'vehicle', 'airliner': 'vehicle', 'cab': 'vehicle', 'ambulance': 'vehicle', 'fire_engine': 'vehicle'
+    }
+
+
 # Function to get class names
 def get_classes(dataset):
     return dataset.classes
@@ -42,6 +59,13 @@ def compute_precision(all_labels, all_predictions, classes):
         precision = precision_matrix[i]
         print(f'{cls}: {precision:.4f}')
 
+
+# Computes macro percisions
+def compute_macro_percision(all_labels, all_predictions):
+    precision_matrix = precision_score(all_labels, all_predictions, average = 'macro')
+    print(f"Percision Recall: {precision_matrix:.4f}")
+
+
 def compute_recall(all_labels, all_predictions, classes):
     """
     Function to display recall score per class.
@@ -53,6 +77,12 @@ def compute_recall(all_labels, all_predictions, classes):
         recall = recall_matrix[i]
         print(f'{cls}: {recall:.4f}')
 
+# Computes macro recall
+def compute_macro_recall(all_labels, all_predictions):
+    recall_matrix = recall_score(all_labels, all_predictions, average='macro')
+    print(f"Macro Recall: {recall_matrix:.4f}")
+
+
 def compute_f1(all_labels, all_predictions, classes):
     """
     Function to display f1 score per class.
@@ -63,6 +93,34 @@ def compute_f1(all_labels, all_predictions, classes):
     for i, cls in enumerate(classes):
         f1 = f1_matrix[i]
         print(f'{cls}: {f1:.4f}')
+
+
+# Computes macro F1-scores 
+def com_macro(all_labels, all_predictions):
+    macro_f1 = f1_score(all_labels, all_predictions, average='macro')
+    print(f"Macro F1 Score: {macro_f1:.4f}")
+
+
+def compute_mean_accuracy_per_superclass(correct_per_class, total_per_class, classes):
+    superclass_correct = {}
+    superclass_total = {}
+
+
+    for i, cls in enumerate(classes):
+        superclass = classes
+        superclass = class_to_superclass.get(cls, None)
+        if superclass:
+            if superclass not in superclass_correct:
+                superclass_correct[superclass] = 0
+                superclass_total[superclass] = 0
+            superclass_correct[superclass] += correct_per_class[i]
+            superclass_total[superclass] += total_per_class[i]
+
+    print("\nMean Accuracy per Superclass:")
+    for superclass, correct in superclass_correct.items():
+        total = superclass_total[superclass]
+        mean_accuracy = 100 * correct / total if total > 0 else 0
+        print(f'{superclass}: {mean_accuracy:.2f}%')
 
 
 def test(model_path, batch_size):
@@ -121,11 +179,26 @@ def test(model_path, batch_size):
     # computes precision score per class
     compute_precision(all_labels, all_predictions, classes)
 
+    # computes macro precision 
+    compute_macro_percision(all_labels, all_predictions)
+
     # computes recall score per class
     compute_recall(all_labels, all_predictions, classes)
 
+    # computes macro recall 
+    compute_macro_recall(all_labels, all_predictions)
+
     # computes f1 score per class
     compute_f1(all_labels, all_predictions, classes)
+
+    # Computes macro f1 score
+    com_macro(all_labels, all_predictions)
+
+    # Function to compute mean accuracy per superclass
+    compute_mean_accuracy_per_superclass(correct_per_class, total_per_class, classes)
+    
+    # Computes metrics for each super class
+
 
 
 if __name__ == '__main__':
