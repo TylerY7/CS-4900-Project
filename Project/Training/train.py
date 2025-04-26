@@ -17,11 +17,8 @@ import sys
 import os
 
 # Import for the linear model for training
-'''
-
 from linear_model import LinearModel
 
-'''
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +33,7 @@ from dataset_download_superclass import CIFAR100Custom
 # Created a dictionary to add more models
 MODEL_MAP = {
     "Net": Net,
-    # 'LinearModel': LinearModel
+    'LinearModel': LinearModel
 }
 
 def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
@@ -64,9 +61,8 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
-    # For later use:
-    # net = model_class(output_classes)
-    net = Net(output_classes)
+    net = model_class(output_classes)
+    # net = Net(output_classes)
     net.to(device)
     writer = SummaryWriter(runs_dir + timestamp)
     criterion = nn.CrossEntropyLoss()
