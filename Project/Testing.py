@@ -282,9 +282,15 @@ def compute_macro_f1_for_superclass(all_labels, all_predictions, classes):
         print(f"{superclass}: {f1:.4f}")
 
 
-def test(model_path, batch_size):
+def test(model_path, batch_size, evaluate_only_super):
     """
     Function to test the trained model on the test dataset.
+
+    Args:
+        model_path (string): model path for the trained model
+        batch_size (int): batch size for testing
+        evaluate_only_super (string): Chooses between evaluating only on super class metrics (if model only trained on super class),
+                         or both super class and class metrics (if model was trained with classes as ground truths) (Choices = y or n)
     """
     # Define transformation
     transform = transforms.Compose([
@@ -382,6 +388,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test a trained CNN model.')
     parser.add_argument('--model_path', type=str, required=True, help='Path to the trained model')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for testing')
+    parser.add_argument('--evaluate_only_super', type=str, required=True, choices=['y', 'n'],
+                         help='(str) Evaluates only on super class metrics or both class and super class metrics')
     
     args = parser.parse_args()
-    test(args.model_path, args.batch_size)
+    test(args.model_path, args.batch_size, args.evaluate_only_super)
