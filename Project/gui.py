@@ -9,9 +9,9 @@ import sys
 
 # Set up paths for model
 base_dir = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(base_dir, '..', 'Dataset')
-net_path = os.path.join(base_dir, '..', 'Training')
-model_path = os.path.join(base_dir, '..', 'models', 'model_1743203997.09198.pt')
+dataset_path = os.path.join(base_dir, 'Dataset')
+net_path = os.path.join(base_dir, 'Training')
+model_path = os.path.join(base_dir, 'models', 'model_1743203997.09198.pt')
 sys.path.append(dataset_path)
 sys.path.append(net_path)
 

@@ -25,12 +25,11 @@ from linear_model import LinearModel
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-runs_dir = os.path.join(base_dir, '..', 'runs/CIFAR100')
-models_dir = os.path.join(base_dir, '..', 'models')
-dataset_path = os.path.join(base_dir, '..', 'Dataset')
+runs_dir = os.path.join(base_dir, 'runs/CIFAR100')
+models_dir = os.path.join(base_dir, 'models')
+dataset_path = os.path.join(base_dir, 'Dataset')
 sys.path.append(dataset_path)
 
-import dataset_download
 from dataset_download_superclass import CIFAR100Custom
 
 # Created a dictionary to add more models
