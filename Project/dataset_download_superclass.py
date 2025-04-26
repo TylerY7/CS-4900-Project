@@ -1,6 +1,7 @@
 from torchvision.datasets import CIFAR100
 import os
 import pickle
+from torch.utils.data import random_split, DataLoader
 
 class CIFAR100Custom(CIFAR100):
     def __init__(self, root, train=True, transform=None, target_transform=None,
@@ -23,3 +24,19 @@ class CIFAR100Custom(CIFAR100):
             self.targets = self.coarse_labels_all
         else:
             raise ValueError("label_type must be 'fine' or 'coarse'")
+
+    def split_data(full_dataset):
+        # get sizes for training set and validation set
+        train_size = int(0.8 * len(full_dataset))
+        val_size = len(full_dataset) - train_size
+
+        # split dataset between training and validation
+        train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
+
+        return train_dataset, val_dataset
+
+    def get_data_loader(train_dataset, batch_size):
+        return DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+    def get_validation_data_loader(val_dataset, batch_size):
+        return DataLoader(val_dataset, batch_size=batch_size, shuffle=False)

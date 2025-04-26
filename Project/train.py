@@ -52,14 +52,14 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         output_classes (int): 20 (super classes) or 100 (classes)
     """
     # split dataset
-    train_dataset, val_dataset = dataset_download.split_data(dataset)
+    train_dataset, val_dataset = CIFAR100Custom.split_data(dataset)
 
     # Create training set data loader
-    train_loader = dataset_download.get_data_loader(train_dataset, batch_size)
+    train_loader = CIFAR100Custom.get_data_loader(train_dataset, batch_size)
     size = len(train_loader.dataset)
 
     # Create validation set data loader
-    val_loader = dataset_download.get_validation_data_loader(val_dataset, batch_size)
+    val_loader = CIFAR100Custom.get_validation_data_loader(val_dataset, batch_size)
 
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
@@ -126,14 +126,13 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     print('Finished Training')
     writer.close()
-    torch.save(net.state_dict(), path)
+    #torch.save(net.state_dict(), path)
     # Implement this once we are doing real training, that way the GUI can know which type of labels to use during predictions
-    '''
     torch.save({
-        'model_state': model.state_dict(),
+        'model_state': net.state_dict(),
         'label_type': label_type,
+        'num_classes': output_classes
         }, path)
-    '''
 
 def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
     """
