@@ -128,6 +128,13 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     print('Finished Training')
     writer.close()
     torch.save(net.state_dict(), path)
+    # Implement this once we are doing real training, that way the GUI can know which type of labels to use during predictions
+    '''
+    torch.save({
+        'model_state': model.state_dict(),
+        'label_type': label_type,
+        }, path)
+    '''
 
 def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
     """
