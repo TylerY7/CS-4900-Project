@@ -62,7 +62,7 @@ def compute_precision(all_labels, all_predictions, classes):
 
 # Computes macro percisions
 def compute_macro_percision(all_labels, all_predictions):
-    precision_matrix = precision_score(all_labels, all_predictions, average = 'macro')
+    precision_matrix = precision_score(all_labels, all_predictions, average = 'macro', zero_division=0)
     print(f"Macro Percision: {precision_matrix:.4f}")
 
 
