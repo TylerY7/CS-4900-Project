@@ -96,7 +96,7 @@ def compute_f1(all_labels, all_predictions, classes):
 
 
 # Computes macro F1-scores 
-def com_macro(all_labels, all_predictions):
+def compute_macro_f1(all_labels, all_predictions):
     macro_f1 = f1_score(all_labels, all_predictions, average='macro')
     print(f"Macro F1 Score: {macro_f1:.4f}")
 
@@ -358,7 +358,7 @@ def test(model_path, batch_size, evaluate_only_super):
         compute_macro_recall(all_labels, all_predictions)
 
         # Computes macro f1 score
-        com_macro(all_labels, all_predictions)
+        compute_macro_f1(all_labels, all_predictions)
 
     # Computes the per-class accuracy over the whole test set for each super class 
     compute_per_class_accuracy_per_superclass(correct_per_class, total_per_class, classes)
