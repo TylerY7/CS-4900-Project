@@ -63,7 +63,7 @@ def compute_precision(all_labels, all_predictions, classes):
 # Computes macro percisions
 def compute_macro_percision(all_labels, all_predictions):
     precision_matrix = precision_score(all_labels, all_predictions, average = 'macro')
-    print(f"Percision Recall: {precision_matrix:.4f}")
+    print(f"Macro Percision: {precision_matrix:.4f}")
 
 
 def compute_recall(all_labels, all_predictions, classes):
@@ -394,3 +394,5 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     test(args.model_path, args.batch_size, args.evaluate_only_super)
+
+# models\model_1742768151.282855.pt
