@@ -351,14 +351,14 @@ def test(model_path, batch_size, evaluate_only_super):
         # computes f1 score per class
         compute_f1(all_labels, all_predictions, classes)
 
-    # computes macro precision 
-    compute_macro_percision(all_labels, all_predictions)
+        # computes macro precision 
+        compute_macro_percision(all_labels, all_predictions)
 
-    # computes macro recall 
-    compute_macro_recall(all_labels, all_predictions)
+        # computes macro recall 
+        compute_macro_recall(all_labels, all_predictions)
 
-    # Computes macro f1 score
-    com_macro(all_labels, all_predictions)
+        # Computes macro f1 score
+        com_macro(all_labels, all_predictions)
 
     # Computes the per-class accuracy over the whole test set for each super class 
     compute_per_class_accuracy_per_superclass(correct_per_class, total_per_class, classes)
