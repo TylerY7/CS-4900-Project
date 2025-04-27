@@ -248,7 +248,7 @@ if __name__ == '__main__':
                                transform=transforms.ToTensor(), label_type=label_type)
 
     # Path for saving/loading model
-    PATH = models_dir + '/model_' + timestamp + '.pt'
+    PATH = models_dir + '/model_' + model_name + '_' + timestamp + '.pt'
 
     # runs train function
     train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, num_classes)
