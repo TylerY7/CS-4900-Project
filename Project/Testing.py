@@ -334,11 +334,11 @@ def test(model_path, batch_size, evaluate_only_super):
                 if predicted[i].item() == label:
                     correct_per_class[label] += 1
     
-    # Compute overall accuracy
-    accuracy = 100 * correct / total
-    print(f'Overall Accuracy: {accuracy:.2f}%')
-    
     if(evaluate_only_super == 'n'):
+        # Compute overall accuracy
+        accuracy = 100 * correct / total
+        print(f'Overall Accuracy: {accuracy:.2f}%')
+
         # Compute per-class accuracy
         compute_metrics(correct_per_class, total_per_class, classes)
 
