@@ -338,23 +338,24 @@ def test(model_path, batch_size, evaluate_only_super):
     accuracy = 100 * correct / total
     print(f'Overall Accuracy: {accuracy:.2f}%')
     
-    # Compute per-class accuracy
-    compute_metrics(correct_per_class, total_per_class, classes)
+    if(evaluate_only_super == 'n'):
+        # Compute per-class accuracy
+        compute_metrics(correct_per_class, total_per_class, classes)
 
-    # computes precision score per class
-    compute_precision(all_labels, all_predictions, classes)
+        # computes precision score per class
+        compute_precision(all_labels, all_predictions, classes)
+
+        # computes recall score per class
+        compute_recall(all_labels, all_predictions, classes)
+
+        # computes f1 score per class
+        compute_f1(all_labels, all_predictions, classes)
 
     # computes macro precision 
     compute_macro_percision(all_labels, all_predictions)
 
-    # computes recall score per class
-    compute_recall(all_labels, all_predictions, classes)
-
     # computes macro recall 
     compute_macro_recall(all_labels, all_predictions)
-
-    # computes f1 score per class
-    compute_f1(all_labels, all_predictions, classes)
 
     # Computes macro f1 score
     com_macro(all_labels, all_predictions)
