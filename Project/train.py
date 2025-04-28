@@ -67,7 +67,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     # net = model_class(output_classes)
     net = Net(output_classes)
     net.to(device)
-    writer = SummaryWriter(runs_dir + timestamp)
+    writer = SummaryWriter(runs_dir + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(lr) + 'lr-' + output_classes + 'cls_' + timestamp)
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
@@ -248,7 +248,7 @@ if __name__ == '__main__':
                                transform=transforms.ToTensor(), label_type=label_type)
 
     # Path for saving/loading model
-    PATH = models_dir + '/model_' + model_name + '_' + timestamp + '.pt'
+    PATH = models_dir + '/model_' + model_name + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(learning_rate) + 'lr-' + 'cls_' + timestamp + '.pt'
 
     # runs train function
     train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, num_classes)
