@@ -2,7 +2,8 @@ import torch
 import torchvision.transforms as transforms
 import torchvision
 from torch.utils.data import DataLoader
-from Training.model_cnn import Net
+from model_cnn import Net
+from linear_model import LinearModel
 import sys
 from datetime import datetime
 import os
@@ -11,7 +12,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(base_dir, 'Dataset')
+dataset_path = os.path.join(base_dir, 'old_stuff/Dataset')
 sys.path.append(dataset_path)
 
 import dataset_download
@@ -289,8 +290,7 @@ def test(model_path, batch_size, evaluate_only_super):
     Args:
         model_path (string): model path for the trained model
         batch_size (int): batch size for testing
-        evaluate_only_super (string): Chooses between evaluating only on super class metrics (if model only trained on super class),
-                         or both super class and class metrics (if model was trained with classes as ground truths) (Choices = y or n)
+        evaluate_only_super (string): Chooses between evaluating only on super class metrics (if model only trained on super class), or both super class and class metrics (if model was trained with classes as ground truths) (Choices = y or n)
     """
     # Define transformation
     transform = transforms.Compose([
@@ -304,9 +304,20 @@ def test(model_path, batch_size, evaluate_only_super):
     classes = get_classes(test_dataset)
 
     # Load the trained model
-    net = Net(len(classes))
-    net.load_state_dict(torch.load(model_path))
-    net.eval()
+    checkpoint = torch.load(model_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+    #label_type = checkpoint['label_type']
+    num_classes = checkpoint['num_classes']
+
+    # check if model is linear or cnn
+    model = None
+    if("Net" in model_path):
+        print("Starting testing of CNN model")
+        model = Net(num_classes)
+    else:
+        print("Starting testing of linear model")
+        model = LinearModel(num_classes)
+    model.load_state_dict(checkpoint['model_state'])
+    model.eval()
     
     correct = 0
     total = 0
@@ -319,7 +330,7 @@ def test(model_path, batch_size, evaluate_only_super):
     with torch.no_grad():
         for data in test_loader:
             images, labels = data
-            outputs = net(images)
+            outputs = model(images)
             _, predicted = torch.max(outputs, 1)
 
             all_labels.extend(labels.cpu().numpy())
@@ -395,4 +406,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     test(args.model_path, args.batch_size, args.evaluate_only_super)
 
-# models\model_1742768151.282855.pt
+# for testing (delete later): models\model_Net_1745781891.582031.pt
