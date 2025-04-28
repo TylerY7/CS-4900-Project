@@ -1,3 +1,10 @@
+"""
+This script opens TensorBoard in a new tab on a web browser 
+in order to display logged data from training such as training loss for saved models. 
+It is required that the user has run the train.py file first and has 
+kept the resulting saved files in the runs folder in order to have any information displayed.
+To shut down once started, press CTRL+C.
+"""
 import webbrowser
 from subprocess import Popen, DEVNULL
 import time
