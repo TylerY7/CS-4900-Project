@@ -37,10 +37,28 @@ class_to_superclass = {
 
 # Function to get class names
 def get_classes(dataset):
+    """
+    Function to get class names.
+
+    Args:
+        dataset (CIFAR100Custom): CIFAR100 dataset
+    
+    Returns:
+        list: returns list of class names in the dataset
+    """
     return dataset.classes
 
 # Function to compute accuracy per class
 def compute_metrics(correct_per_class, total_per_class, classes):
+    """
+    Function using during testing (if class metrics are evaluated) to compute per class accuracy and prints name of each class with its accuracy.
+    Uses arguments given from testing.
+
+    Args:
+        correct_per_class (list): list of values from 0 onwards representing how many correct predictions the model made per class
+        total_per_class (list): list of values from 0 onwards representing how many images from each class were used
+        classes (list): list of class names from dataset
+    """
     print("Per-Class Accuracy:")
     for i, cls in enumerate(classes):
         if total_per_class[i] > 0:
@@ -51,8 +69,13 @@ def compute_metrics(correct_per_class, total_per_class, classes):
 
 def compute_precision(all_labels, all_predictions, classes):
     """
-    Function to display precision score per class.
-    Shows class names along with precision score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class precision and prints name of each class with its precision.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class Precision:")
     precision_matrix = precision_score(all_labels, all_predictions, average = None, zero_division=0)
@@ -63,14 +86,27 @@ def compute_precision(all_labels, all_predictions, classes):
 
 # Computes macro percisions
 def compute_macro_percision(all_labels, all_predictions):
+    """
+    Function using during testing (if class metrics are evaluated) to compute and print macro precision.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
     precision_matrix = precision_score(all_labels, all_predictions, average = 'macro', zero_division=0)
     print(f"Macro Percision: {precision_matrix:.4f}")
 
 
 def compute_recall(all_labels, all_predictions, classes):
     """
-    Function to display recall score per class.
-    Shows class names along with recall score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class recall score and prints name of each class with its recall score.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class Recall:")
     recall_matrix = recall_score(all_labels, all_predictions, average=None, zero_division=0)
@@ -80,14 +116,27 @@ def compute_recall(all_labels, all_predictions, classes):
 
 # Computes macro recall
 def compute_macro_recall(all_labels, all_predictions):
+    """
+    Function using during testing (if class metrics are evaluated) to compute and print macro recall.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
     recall_matrix = recall_score(all_labels, all_predictions, average='macro')
     print(f"Macro Recall: {recall_matrix:.4f}")
 
 
 def compute_f1(all_labels, all_predictions, classes):
     """
-    Function to display f1 score per class.
-    Shows class names along with f1 score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class f1 score and prints name of each class with its f1 score.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class f1:")
     f1_matrix = f1_score(all_labels, all_predictions, average=None, zero_division=0)
@@ -98,6 +147,14 @@ def compute_f1(all_labels, all_predictions, classes):
 
 # Computes macro F1-scores 
 def compute_macro_f1(all_labels, all_predictions):
+    """
+    Function using during testing to compute and print macro f1 score if class metrics are evaluated.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
     macro_f1 = f1_score(all_labels, all_predictions, average='macro')
     print(f"Macro F1 Score: {macro_f1:.4f}")
 
@@ -285,7 +342,9 @@ def compute_macro_f1_for_superclass(all_labels, all_predictions, classes):
 
 def test(model_path, batch_size, evaluate_only_super):
     """
-    Function to test the trained model on the test dataset.
+    Function to test the trained model on the test dataset. Loads model from given model_path.
+    If evaluate_only_super is 'n', class metrics will be printed first followed by super class metrics.
+    If 'y', only super class metrics will be printed.
 
     Args:
         model_path (string): model path for the trained model
