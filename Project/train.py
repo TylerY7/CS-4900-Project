@@ -126,8 +126,8 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     print('Finished Training')
     writer.close()
-    #torch.save(net.state_dict(), path)
-    # Implement this once we are doing real training, that way the GUI can know which type of labels to use during predictions
+
+    # Saves model with its label type(Fine/Course) and number of classes (Fine = 100, coarse = 20)
     torch.save({
         'model_state': net.state_dict(),
         'label_type': label_type,
