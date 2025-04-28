@@ -11,24 +11,13 @@ import sys
 base_dir = os.path.dirname(os.path.abspath(__file__))
 dataset_path = os.path.join(base_dir, 'Dataset')
 net_path = os.path.join(base_dir, 'Training')
-model_path = os.path.join(base_dir, 'models', 'model_Net_1745781891.582031.pt')
+model_path = os.path.join(base_dir, 'models', 'model_Net_150e-128bs-0.01lr-100cls_1745798565.021512.pt')
 sys.path.append(dataset_path)
 sys.path.append(net_path)
 
 from model_cnn import Net
 from dataset_download_superclass import CIFAR100Custom
 
-'''
-# Remove this line later when we train models that save their label type
-label_type = 'fine'
-
-# Load labels
-label_dataset = CIFAR100Custom(root='./data', train=False, download=True,
-                                transform=transforms.ToTensor(), label_type=label_type)
-label_names = label_dataset.classes
-
-'''
-#Use this block with new models that save label type
 # Load checkpoint
 checkpoint = torch.load(model_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
 label_type = checkpoint['label_type']

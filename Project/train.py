@@ -62,7 +62,8 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     model_class = MODEL_MAP[model_name]
     model = model_class(output_classes)
     model.to(device)
-    writer = SummaryWriter(runs_dir + timestamp)
+    writer = SummaryWriter(runs_dir + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(lr) + 'lr-' + output_classes + 'cls_' + timestamp)
+
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
@@ -121,8 +122,8 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     print('Finished Training')
     writer.close()
-    #torch.save(net.state_dict(), path)
-    # Implement this once we are doing real training, that way the GUI can know which type of labels to use during predictions
+
+    # Saves model with its label type(Fine/Course) and number of classes (Fine = 100, coarse = 20)
     torch.save({
         'model_state': model.state_dict(),
         'label_type': label_type,
@@ -243,7 +244,7 @@ if __name__ == '__main__':
                                transform=transforms.ToTensor(), label_type=label_type)
 
     # Path for saving/loading model
-    PATH = models_dir + '/model_' + model_name + '_' + timestamp + '.pt'
+    PATH = models_dir + '/model_' + model_name + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(learning_rate) + 'lr-' + 'cls_' + timestamp + '.pt'
 
     # runs train function
     train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, num_classes)
