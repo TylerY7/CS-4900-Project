@@ -60,13 +60,12 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
-    net = model_class(output_classes)
-    # net = Net(output_classes)
-    net.to(device)
+    model = model_class(output_classes)
+    model.to(device)
     writer = SummaryWriter(runs_dir + timestamp)
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
-    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
     # Learning rate scheduler
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
@@ -80,7 +79,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         correct = 0
         total = 0
 
-        net.train(True)
+        model.train(True)
 
         for i, data in enumerate(train_loader):
             # Loads data into device being used for training
@@ -92,7 +91,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
                 writer.add_image('input_images', img_grid)
 
             optimizer.zero_grad()
-            outputs = net(inputs)
+            outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -110,7 +109,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
         # function that performs validation
-        lowest_v_loss = validate(epoch, net, writer, val_loader, avg_loss, lowest_v_loss)
+        lowest_v_loss = validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss)
 
         writer.add_scalar('Training loss', avg_loss, epoch)
         writer.add_scalar('Training accuracy', accuracy, epoch)
@@ -125,7 +124,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     #torch.save(net.state_dict(), path)
     # Implement this once we are doing real training, that way the GUI can know which type of labels to use during predictions
     torch.save({
-        'model_state': net.state_dict(),
+        'model_state': model.state_dict(),
         'label_type': label_type,
         'num_classes': output_classes
         }, path)
