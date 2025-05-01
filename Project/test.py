@@ -2,7 +2,8 @@ import torch
 import torchvision.transforms as transforms
 import torchvision
 from torch.utils.data import DataLoader
-from Training.model_cnn import Net
+from model_cnn import Net
+from linear_model import LinearModel
 import sys
 from datetime import datetime
 import os
@@ -11,7 +12,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(base_dir, 'Dataset')
+dataset_path = os.path.join(base_dir, 'old_stuff/Dataset')
 sys.path.append(dataset_path)
 
 import dataset_download
@@ -36,10 +37,28 @@ class_to_superclass = {
 
 # Function to get class names
 def get_classes(dataset):
+    """
+    Function to get class names.
+
+    Args:
+        dataset (CIFAR100Custom): CIFAR100 dataset
+    
+    Returns:
+        list: returns list of class names in the dataset
+    """
     return dataset.classes
 
 # Function to compute accuracy per class
 def compute_metrics(correct_per_class, total_per_class, classes):
+    """
+    Function using during testing (if class metrics are evaluated) to compute per class accuracy and prints name of each class with its accuracy.
+    Uses arguments given from testing.
+
+    Args:
+        correct_per_class (list): list of values from 0 onwards representing how many correct predictions the model made per class
+        total_per_class (list): list of values from 0 onwards representing how many images from each class were used
+        classes (list): list of class names from dataset
+    """
     print("Per-Class Accuracy:")
     for i, cls in enumerate(classes):
         if total_per_class[i] > 0:
@@ -50,8 +69,13 @@ def compute_metrics(correct_per_class, total_per_class, classes):
 
 def compute_precision(all_labels, all_predictions, classes):
     """
-    Function to display precision score per class.
-    Shows class names along with precision score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class precision and prints name of each class with its precision.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class Precision:")
     precision_matrix = precision_score(all_labels, all_predictions, average = None, zero_division=0)
@@ -62,14 +86,27 @@ def compute_precision(all_labels, all_predictions, classes):
 
 # Computes macro percisions
 def compute_macro_percision(all_labels, all_predictions):
-    precision_matrix = precision_score(all_labels, all_predictions, average = 'macro')
-    print(f"Percision Recall: {precision_matrix:.4f}")
+    """
+    Function using during testing (if class metrics are evaluated) to compute and print macro precision.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
+    precision_matrix = precision_score(all_labels, all_predictions, average = 'macro', zero_division=0)
+    print(f"Macro Percision: {precision_matrix:.4f}")
 
 
 def compute_recall(all_labels, all_predictions, classes):
     """
-    Function to display recall score per class.
-    Shows class names along with recall score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class recall score and prints name of each class with its recall score.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class Recall:")
     recall_matrix = recall_score(all_labels, all_predictions, average=None, zero_division=0)
@@ -79,14 +116,27 @@ def compute_recall(all_labels, all_predictions, classes):
 
 # Computes macro recall
 def compute_macro_recall(all_labels, all_predictions):
+    """
+    Function using during testing (if class metrics are evaluated) to compute and print macro recall.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
     recall_matrix = recall_score(all_labels, all_predictions, average='macro')
     print(f"Macro Recall: {recall_matrix:.4f}")
 
 
 def compute_f1(all_labels, all_predictions, classes):
     """
-    Function to display f1 score per class.
-    Shows class names along with f1 score associated with the class.
+    Function using during testing (if class metrics are evaluated) to compute per class f1 score and prints name of each class with its f1 score.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     print("---------------------\n\nPer-Class f1:")
     f1_matrix = f1_score(all_labels, all_predictions, average=None, zero_division=0)
@@ -96,7 +146,15 @@ def compute_f1(all_labels, all_predictions, classes):
 
 
 # Computes macro F1-scores 
-def com_macro(all_labels, all_predictions):
+def compute_macro_f1(all_labels, all_predictions):
+    """
+    Function using during testing to compute and print macro f1 score if class metrics are evaluated.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+    """
     macro_f1 = f1_score(all_labels, all_predictions, average='macro')
     print(f"Macro F1 Score: {macro_f1:.4f}")
 
@@ -282,9 +340,16 @@ def compute_macro_f1_for_superclass(all_labels, all_predictions, classes):
         print(f"{superclass}: {f1:.4f}")
 
 
-def test(model_path, batch_size):
+def test(model_path, batch_size, evaluate_only_super):
     """
-    Function to test the trained model on the test dataset.
+    Function to test the trained model on the test dataset. Loads model from given model_path.
+    If evaluate_only_super is 'n', class metrics will be printed first followed by super class metrics.
+    If 'y', only super class metrics will be printed.
+
+    Args:
+        model_path (string): model path for the trained model
+        batch_size (int): batch size for testing
+        evaluate_only_super (string): Chooses between evaluating only on super class metrics (if model only trained on super class), or both super class and class metrics (if model was trained with classes as ground truths) (Choices = y or n)
     """
     # Define transformation
     transform = transforms.Compose([
@@ -298,9 +363,20 @@ def test(model_path, batch_size):
     classes = get_classes(test_dataset)
 
     # Load the trained model
-    net = Net(len(classes))
-    net.load_state_dict(torch.load(model_path))
-    net.eval()
+    checkpoint = torch.load(model_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+    #label_type = checkpoint['label_type']
+    num_classes = checkpoint['num_classes']
+
+    # check if model is linear or cnn
+    model = None
+    if("Net" in model_path):
+        print("Starting testing of CNN model")
+        model = Net(num_classes)
+    else:
+        print("Starting testing of linear model")
+        model = LinearModel(num_classes)
+    model.load_state_dict(checkpoint['model_state'])
+    model.eval()
     
     correct = 0
     total = 0
@@ -313,7 +389,7 @@ def test(model_path, batch_size):
     with torch.no_grad():
         for data in test_loader:
             images, labels = data
-            outputs = net(images)
+            outputs = model(images)
             _, predicted = torch.max(outputs, 1)
 
             all_labels.extend(labels.cpu().numpy())
@@ -328,30 +404,31 @@ def test(model_path, batch_size):
                 if predicted[i].item() == label:
                     correct_per_class[label] += 1
     
-    # Compute overall accuracy
-    accuracy = 100 * correct / total
-    print(f'Overall Accuracy: {accuracy:.2f}%')
-    
-    # Compute per-class accuracy
-    compute_metrics(correct_per_class, total_per_class, classes)
+    if(evaluate_only_super == 'n'):
+        # Compute overall accuracy
+        accuracy = 100 * correct / total
+        print(f'Overall Accuracy: {accuracy:.2f}%')
 
-    # computes precision score per class
-    compute_precision(all_labels, all_predictions, classes)
+        # Compute per-class accuracy
+        compute_metrics(correct_per_class, total_per_class, classes)
 
-    # computes macro precision 
-    compute_macro_percision(all_labels, all_predictions)
+        # computes precision score per class
+        compute_precision(all_labels, all_predictions, classes)
 
-    # computes recall score per class
-    compute_recall(all_labels, all_predictions, classes)
+        # computes recall score per class
+        compute_recall(all_labels, all_predictions, classes)
 
-    # computes macro recall 
-    compute_macro_recall(all_labels, all_predictions)
+        # computes f1 score per class
+        compute_f1(all_labels, all_predictions, classes)
 
-    # computes f1 score per class
-    compute_f1(all_labels, all_predictions, classes)
+        # computes macro precision 
+        compute_macro_percision(all_labels, all_predictions)
 
-    # Computes macro f1 score
-    com_macro(all_labels, all_predictions)
+        # computes macro recall 
+        compute_macro_recall(all_labels, all_predictions)
+
+        # Computes macro f1 score
+        compute_macro_f1(all_labels, all_predictions)
 
     # Computes the per-class accuracy over the whole test set for each super class 
     compute_per_class_accuracy_per_superclass(correct_per_class, total_per_class, classes)
@@ -382,6 +459,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test a trained CNN model.')
     parser.add_argument('--model_path', type=str, required=True, help='Path to the trained model')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for testing')
+    parser.add_argument('--evaluate_only_super', type=str, required=True, choices=['y', 'n'],
+                         help='(str) Evaluates only on super class metrics or both class and super class metrics')
     
     args = parser.parse_args()
-    test(args.model_path, args.batch_size)
+    test(args.model_path, args.batch_size, args.evaluate_only_super)
+
+# for testing (delete later): models\model_Net_1745781891.582031.pt

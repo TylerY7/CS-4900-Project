@@ -17,11 +17,8 @@ import sys
 import os
 
 # Import for the linear model for training
-'''
-
 from linear_model import LinearModel
 
-'''
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -35,20 +32,22 @@ from dataset_download_superclass import CIFAR100Custom
 # Created a dictionary to add more models
 MODEL_MAP = {
     "Net": Net,
-    # 'LinearModel': LinearModel
+    'LinearModel': LinearModel
 }
 
 def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     """
-    Function for training the model
+    Function for training the model with given arguments. 
+    Prints information on training loss and validation loss throughout along with accuracy.
+    Saves models to models folder for future loading of model and saves to runs folder for Tensorboard graphing.
 
     Args:
         epochs (int): Number of training epochs
         batch_size (int): Batch size for training
         lr (float): Learning rate for optimization
-        dataset (string): CIFAR100
+        dataset (CIFAR100Custom): CIFAR100 dataset
         path (string): path to save trained model
-        model_name (string): type of model (CNN or Linear)
+        model_name (string): type of model (Net for CNN or LinearModel for Linear)
         output_classes (int): 20 (super classes) or 100 (classes)
     """
     # split dataset
@@ -63,14 +62,13 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     # (Dynamically) Instantiate model
     model_class = MODEL_MAP[model_name]
-    # For later use:
-    # net = model_class(output_classes)
-    net = Net(output_classes)
-    net.to(device)
+    model = model_class(output_classes)
+    model.to(device)
     writer = SummaryWriter(runs_dir + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(lr) + 'lr-' + output_classes + 'cls_' + timestamp)
+
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
-    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
     # Learning rate scheduler
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
@@ -84,7 +82,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         correct = 0
         total = 0
 
-        net.train(True)
+        model.train(True)
 
         for i, data in enumerate(train_loader):
             # Loads data into device being used for training
@@ -96,7 +94,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
                 writer.add_image('input_images', img_grid)
 
             optimizer.zero_grad()
-            outputs = net(inputs)
+            outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -114,7 +112,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
         # function that performs validation
-        lowest_v_loss = validate(epoch, net, writer, val_loader, avg_loss, lowest_v_loss)
+        lowest_v_loss = validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss)
 
         writer.add_scalar('Training loss', avg_loss, epoch)
         writer.add_scalar('Training accuracy', accuracy, epoch)
@@ -129,19 +127,21 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     # Saves model with its label type(Fine/Course) and number of classes (Fine = 100, coarse = 20)
     torch.save({
-        'model_state': net.state_dict(),
+        'model_state': model.state_dict(),
         'label_type': label_type,
         'num_classes': output_classes
         }, path)
 
 def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
     """
-    Measures model's training performance
+    Measures model's training performance. 
+    Validation is performed each epoch during training method and uses same arguments provided for training method.
+    Prints average training loss compared to average validation loss. Records and graphs training vs validation loss.
 
     Args:
         epochs (int): Number of training epochs
-        model (string): CNN or linear model
-        writer (SummaryWrtier): For saving data in a tensor
+        model (string): Net for CNN or LinearModel for linear model
+        writer (SummaryWriter): For saving data in a tensor
         val_loader (DataLoader): Loads datasets for CIFAR100
         avg_loss (float): Average loss during training
         lowest_v_loss (float): Used to compare and find lowest validation loss
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     parser.add_argument('epochs', nargs='?', type=int, help='(int) Number of training epochs')
     parser.add_argument('batch_size', nargs='?', type=int, help='(int) Batch size for training')
     parser.add_argument('learning_rate', nargs='?', type=float, help='(float) Learning rate for optimization')
-    parser.add_argument('model', nargs='?', type=str, choices=MODEL_MAP.keys(), help='(str) type of model (CNN or Linear)')
+    parser.add_argument('model', nargs='?', type=str, choices=MODEL_MAP.keys(), help='(str) type of model (Net for CNN or LinearModel for Linear)')
     parser.add_argument('output_classes', nargs='?', type=int, choices=[20, 100], help='(int) 20 (super classes) or 100 (classes)')
 
     # option to specify arguments (does not need to be ordered)
