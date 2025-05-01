@@ -20,7 +20,7 @@ tb_process = Popen(['tensorboard', '--logdir', log_dir], stdout=DEVNULL, stderr=
 time.sleep(5)
 
 # opens web browser to default URL used by tensorboard
-url = 'http://127.0.0.1:6006'
+url = 'http://localhost:6006'
 print(f'Opening TensorBoard at {url}')
 webbrowser.open(url)
 
