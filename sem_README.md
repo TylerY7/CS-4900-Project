@@ -59,6 +59,7 @@ Project/
    ```bash
    pip install torch torchvision matplotlib tqdm
    pip install scikit-learn tensorboard
+   pip install Pillow
    ```
 
 3. **Download CIFAR-100 dataset**  
