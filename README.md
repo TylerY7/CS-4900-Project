@@ -180,8 +180,8 @@ This project satisfies the **A-level criteria** outlined in the CS: 4900 Capston
   - Number of epochs
   - Learning rate
   - Batch size
-  - Model type (`cnn` or `linear`)
-  - Output type (`class` or `super-class`)
+  - Model type (`Net` or `LinearModel`)
+  - Output type (`100` or `20`)
 - Implementation of both a CNN and a linear (fully connected) model
 - Training and testing workflows for both class and super-class label configurations
 - Modular code structure using `if __name__ == "__main__"` blocks
