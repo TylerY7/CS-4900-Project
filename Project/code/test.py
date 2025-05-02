@@ -454,7 +454,6 @@ def test(model_path, batch_size, evaluate_only_super):
     ])
     
     # Load test dataset
-   # test_dataset = dataset_download.download_test_dataset(transform)
     test_dataset = datasets.CIFAR100(
         root='./data',
         train=False,
