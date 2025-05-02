@@ -119,7 +119,7 @@ Note: the string provided as model path must start with models\\ so that the cor
 
 ### Available Arguments
 
-- `--evaluate_only_super`: either `y` (shows only super class metrics) or `n` (shows only class metrics)
+- `--evaluate_only_super`: either `y` (shows only super class metrics) or `n` (shows both super class and class metrics)
 - `--batch_size`: batch size as an integer (defaults to 32)
 - `--model_path`: Path to the trained model
 
