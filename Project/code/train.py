@@ -1,3 +1,29 @@
+"""
+File for training either CNN models or linear models to classify CIFAR100 images. 
+
+To run, navigate to the directory of train.py and include command line arguments (positional or flagged)
+for epochs as an integer, batch size as an integer, learning rate as a float,
+desired trained model type as string ('Net' for CNN or 'LinearModel' for linear), 
+and desired number of output classes as an integer of 20 or 100 (default is 100).
+
+Command line arguments example:
+python train.py 5 32 0.005 Net 20
+python train.py --epochs 5 --batch_size 32 --learning_rate 0.005 --model Net --output_classes 20
+
+When 100 output classes used, the model will be trained on classes.
+When 20 output classes used, the model will be trained on superclasses.
+
+While running, the model will be trained and validated
+with provided command line arguments. Throughout each epoch, loss will be printed as the model makes
+predictions and checks their accuracy.
+At the end of each epoch, averages for accuracy, loss, and validation loss will be printed
+and recorded in runs for later viewing on graphs. To see these graphs after training,
+run tensorboard_graphing.py.  
+When finishing training, overall accuracy will be printed. 
+
+Uses models directory in Project directory to save models after finishing training.
+Uses runs directory in Project directory to save information for visual graphing with TensorBoard. 
+"""
 # Import necessary modules
 import argparse
 import numpy as np
@@ -25,6 +51,7 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 runs_dir = os.path.join(base_dir, '../runs/CIFAR100')
 models_dir = os.path.join(base_dir, '../models')
 
+# used to obtain the dataset along with fine and coarse labels
 from dataset_download_superclass import CIFAR100Custom
 
 # Created a dictionary to add more models
@@ -43,7 +70,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         epochs (int): Number of training epochs
         batch_size (int): Batch size for training
         lr (float): Learning rate for optimization
-        dataset (CIFAR100Custom): CIFAR100 dataset
+        dataset (CIFAR100Custom): CIFAR100 dataset with fine and coarse labels
         path (string): path to save trained model
         model_name (string): type of model (Net for CNN or LinearModel for Linear)
         output_classes (int): 20 (super classes) or 100 (classes)

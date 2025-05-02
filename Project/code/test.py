@@ -5,9 +5,8 @@ for the model path to the saved model as a string, desired batch size
 for testing as an integer (default is 32), and whether to only display super class metrics
 or class metrics when the model has finished training ('y' or 'n').
 
-Example:
+Command line arguments example:
 python test.py --model_path models\\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt --batch_size 32 --evaluate_only_super y
-
 Note: the string provided as model path must start with models\\ so that the correct directory will be searched.
 """
 import torch
