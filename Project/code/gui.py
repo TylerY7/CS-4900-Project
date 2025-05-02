@@ -106,7 +106,7 @@ def predict_image(path, top_k=5):
 from PIL import ImageTk  # needed for displaying image
 
 root = tk.Tk()
-root.attributes('-fullscreen', True)
+root.state('zoomed')
 
 root.grid_columnconfigure(0, weight=1)
 root.grid_columnconfigure(1, weight=1)
