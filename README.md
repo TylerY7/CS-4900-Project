@@ -44,7 +44,7 @@ Project/
 │   └── train.py                          # Model training script
 ├── models/                               # Contains saved models
 ├── runs/                                 # TensorBoard logs and model checkpoints
-└── sem_README.md                         # Project documentation
+└── README.md                             # Project documentation
 ```
 ## 🚀 Setup Instructions
 
@@ -52,6 +52,7 @@ Project/
    ```bash
    git clone https://github.com/your-username/CS-4900-Project.git
    cd CS-4900-Project
+   ```
 
 2. **Install dependencies manually**  
    Make sure you have Python 3.10+ installed and install the necessary packages:
@@ -86,10 +87,10 @@ python code/train.py 5 32 0.005 Net 20
 ### Available Arguments
 
 - `--model`: Choose between `Net` for CNN or `LinearModel` for LinearModel
-- `--num-classes`: Set to `100` (fine labels) or `20` (super-class labels)
+- `--output_classes`: Set to `100` (fine labels) or `20` (super-class labels)
 - `--learning_rate`: Learning rate (e.g. `0.005`)
-- `--batch-size`: Number of samples per batch
-- `--num-epochs`: Total number of training epochs
+- `--batch_size`: Number of samples per batch
+- `--epochs`: Total number of training epochs
 
 All training logs are saved and compatible with **TensorBoard** for visualization.
 
@@ -100,6 +101,7 @@ tensorboard --logdir=runs
 ```
 
 or by running the tensorboard script from the `code/` directory:
+
 ```bash
 python code/tensorboard_graphing.py
 ```
