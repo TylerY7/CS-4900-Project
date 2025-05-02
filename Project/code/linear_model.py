@@ -1,3 +1,6 @@
+"""
+Code for linear model, trained with train.py
+"""
 import torch
 import torch.nn as nn
 

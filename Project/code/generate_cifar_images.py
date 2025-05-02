@@ -1,5 +1,6 @@
 '''
 Taken from https://www.kaggle.com/code/vbookshelf/cifar-100-how-to-create-csv-files-and-jpg-images
+File for generating .png images from the CIFAR100 images for testing using the GUI.
 '''
 
 import pandas as pd

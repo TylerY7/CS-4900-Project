@@ -1,3 +1,8 @@
+"""
+Application for classifying CIFAR100 images. Uses saved trained CNN model in models and shows
+model's predictions for which CIFAR100 class and superclass most accurately describes
+the image the user wishes to classify.
+"""
 import torch
 import torch.nn.functional as F
 from torchvision import transforms

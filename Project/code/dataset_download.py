@@ -1,3 +1,6 @@
+"""
+Used primarily for downloading test dataset when test.py is run.
+"""
 import os
 from torchvision import datasets, transforms
 from torchvision.transforms import ToTensor
