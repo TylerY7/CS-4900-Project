@@ -1,3 +1,5 @@
+![Project Banner](assets/banner.png)
+
 # CIFAR-100 Image Classifier GUI
 
 A Python-based image classification app that uses a custom-trained convolutional neural network (CNN) to classify images from the CIFAR-100 dataset. The application includes a Tkinter GUI, allowing users to select an image and view both the predicted class and super-class.
