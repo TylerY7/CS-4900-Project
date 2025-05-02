@@ -1,4 +1,4 @@
-![Project Banner](assets/banner.png)
+![Project Banner](assets/banner.jpg)
 
 # CIFAR-100 Image Classifier GUI
 
