@@ -3,15 +3,12 @@ File for training either CNN models or linear models to classify CIFAR100 images
 
 To run, navigate to the directory of train.py and include command line arguments (positional or flagged)
 for epochs as an integer, batch size as an integer, learning rate as a float,
-desired trained model type as string ('Net' for CNN or 'LinearModel' for linear), 
+desired trained model type as string ('Net' for CNN or 'LinearModel' for linear) (default is Net), 
 and desired number of output classes as an integer of 20 or 100 (default is 100).
 
 Command line arguments example:
 python train.py 5 32 0.005 Net 20
 python train.py --epochs 5 --batch_size 32 --learning_rate 0.005 --model Net --output_classes 20
-
-When 100 output classes used, the model will be trained on classes.
-When 20 output classes used, the model will be trained on superclasses.
 
 While running, the model will be trained and validated
 with provided command line arguments. Throughout each epoch, loss will be printed as the model makes
