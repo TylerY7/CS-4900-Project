@@ -571,6 +571,3 @@ if __name__ == '__main__':
 
     test(models_model_path, args.batch_size, args.evaluate_only_super)
 
-# for testing (deleter later): models\model_LinearModel_5e-32bs-0.005lr-cls_1746209107.30725.pt
-# Project\models\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt
-# Project\models\super_scale\model_Net_300e-64bs-0.008lr-20cls_1745849542.993408.pt
