@@ -12,6 +12,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(base_dir)
 
 import dataset_download
 import argparse
@@ -488,6 +489,10 @@ if __name__ == '__main__':
                          help='(str) Evaluates only on super class metrics or both class and super class metrics')
     
     args = parser.parse_args()
-    test(args.model_path, args.batch_size, args.evaluate_only_super)
 
-# for testing (delete later): models\model_Net_1745781891.582031.pt
+    # finds model in models folder
+    models_model_path = os.path.join(os.path.sep,parent_dir,args.model_path)
+
+    test(models_model_path, args.batch_size, args.evaluate_only_super)
+
+# for testing (deleter later): models\model_LinearModel_5e-32bs-0.005lr-cls_1746209107.30725.pt
