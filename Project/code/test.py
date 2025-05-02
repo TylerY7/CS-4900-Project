@@ -1,3 +1,12 @@
+"""
+File for testing saved models from training. Models must be in models directory under the Project directory.
+To run, navigate to the directory of test.py and include command line arguments
+for the model path to the saved model as a string, 
+desired batch size for testing as an integer, and whether to only display super class metrics
+or class metrics when the model has finished training ('y' or 'n').
+Example:
+python test.py --model_path models\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt --batch_size 32 --evaluate_only_super y
+"""
 import torch
 import torchvision.transforms as transforms
 import torchvision
@@ -187,7 +196,13 @@ def compute_macro_f1(all_labels, all_predictions):
 
 def compute_per_class_accuracy_per_superclass(correct_per_class, total_per_class, classes):
     """
-    Function to compute per-class accuracy grouped by superclass.
+    Function using during testing to compute per class accuracy grouped by super class and prints per class accuracy under each super class.
+    Uses arguments given from testing.
+
+    Args:
+        correct_per_class (list): list of values from 0 onwards representing how many correct predictions the model made per class
+        total_per_class (list): list of values from 0 onwards representing how many images from each class were used
+        classes (list): list of class names from dataset
     """
     superclass_to_classes = {}
 
@@ -212,6 +227,15 @@ def compute_per_class_accuracy_per_superclass(correct_per_class, total_per_class
             print(f"  {cls}: {acc:.2f}%")
 
 def compute_mean_accuracy_per_superclass(correct_per_class, total_per_class, classes):
+    """
+    Function using during testing to compute and print mean accuracy per super class.
+    Uses arguments given from testing.
+
+    Args:
+        correct_per_class (list): list of values from 0 onwards representing how many correct predictions the model made per class
+        total_per_class (list): list of values from 0 onwards representing how many images from each class were used
+        classes (list): list of class names from dataset
+    """
     superclass_correct = {}
     superclass_total = {}
 
@@ -234,7 +258,13 @@ def compute_mean_accuracy_per_superclass(correct_per_class, total_per_class, cla
 
 def compute_precision_for_superclass(all_labels, all_predictions, classes):
     """
-    Function to compute precision score per superclass.
+    Function using during testing to compute and print precision scores per super class.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
@@ -258,7 +288,13 @@ def compute_precision_for_superclass(all_labels, all_predictions, classes):
 
 def compute_recall_for_superclass(all_labels, all_predictions, classes):
     """
-    Function to compute recall score per superclass.
+    Function using during testing to compute and print recall score per superclass.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
@@ -282,7 +318,13 @@ def compute_recall_for_superclass(all_labels, all_predictions, classes):
 
 def compute_f1_for_superclass(all_labels, all_predictions, classes):
     """
-    Function to compute f1 score per superclass.
+    Function using during testing to compute and print f1 score per superclass.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
     """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
@@ -304,6 +346,15 @@ def compute_f1_for_superclass(all_labels, all_predictions, classes):
         print(f"{superclass}: {f1:.4f}")
 
 def compute_macro_precision_for_superclass(all_labels, all_predictions, classes):
+    """
+    Function using during testing to compute and print macro precision scores per superclass.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
+    """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
     superclass_predictions = {}
@@ -325,6 +376,15 @@ def compute_macro_precision_for_superclass(all_labels, all_predictions, classes)
 
 # Computes macro recall for each superclass
 def compute_macro_recall_for_superclass(all_labels, all_predictions, classes):
+    """
+    Function using during testing to compute and print macro recall scores per superclass.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
+    """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
     superclass_predictions = {}
@@ -346,6 +406,15 @@ def compute_macro_recall_for_superclass(all_labels, all_predictions, classes):
 
 # Computes macro F1 for each superclass
 def compute_macro_f1_for_superclass(all_labels, all_predictions, classes):
+    """
+    Function using during testing to compute and print macro f1 scores per superclass.
+    Uses arguments given from testing.
+
+    Args:
+        all_labels (list): list of numpy.int64 values representing all labels in each testing batch
+        all_predictions (list): list of numpy.int64 values representing all predictions the model made during testing
+        classes (list): list of class names from dataset
+    """
     # Group all the labels and predictions by superclass
     superclass_labels = {}
     superclass_predictions = {}
@@ -430,6 +499,7 @@ def test(model_path, batch_size, evaluate_only_super):
                 if predicted[i].item() == label:
                     correct_per_class[label] += 1
     
+    # determines whether or not to show only super class metrics if 'y' or both super class and class metrics if 'n'
     if(evaluate_only_super == 'n'):
         # Compute overall accuracy
         accuracy = 100 * correct / total
@@ -486,7 +556,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, required=True, help='Path to the trained model')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size for testing')
     parser.add_argument('--evaluate_only_super', type=str, required=True, choices=['y', 'n'],
-                         help='(str) Evaluates only on super class metrics or both class and super class metrics')
+                         help='(str) Displays only super class metrics or both class and super class metrics')
     
     args = parser.parse_args()
 
@@ -496,3 +566,4 @@ if __name__ == '__main__':
     test(models_model_path, args.batch_size, args.evaluate_only_super)
 
 # for testing (deleter later): models\model_LinearModel_5e-32bs-0.005lr-cls_1746209107.30725.pt
+# Project\models\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt
