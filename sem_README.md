@@ -98,6 +98,12 @@ You can launch TensorBoard with:
 ```bash
 tensorboard --logdir=runs
 ```
+
+or by running the tensorboard script from the `code/` directory:
+```bash
+python code/tensorboard_graphing.py
+```
+
 ## 📈 Evaluation
 
 To evaluate a trained model, run the test script from the `code/` directory once you have the file path
@@ -112,7 +118,7 @@ Note: the string provided as model path must start with models\\ so that the cor
 ### Available Arguments
 
 - `--evaluate_only_super`: either `y` (shows only super class metrics) or `n` (shows only class metrics)
-- `--num-classes`: batch size as an integer (defaults to 32)
+- `--batch_size`: batch size as an integer (defaults to 32)
 - `--model_path`: Path to the trained model
 
 
