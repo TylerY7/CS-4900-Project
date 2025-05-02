@@ -1,11 +1,14 @@
 """
 File for testing saved models from training. Models must be in models directory under the Project directory.
 To run, navigate to the directory of test.py and include command line arguments
-for the model path to the saved model as a string, 
-desired batch size for testing as an integer, and whether to only display super class metrics
+for the model path to the saved model as a string, desired batch size
+for testing as an integer (default is 32), and whether to only display super class metrics
 or class metrics when the model has finished training ('y' or 'n').
+
 Example:
-python test.py --model_path models\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt --batch_size 32 --evaluate_only_super y
+python test.py --model_path models\\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt --batch_size 32 --evaluate_only_super y
+
+Note: the string provided as model path must start with models\\ so that the correct directory will be searched.
 """
 import torch
 import torchvision.transforms as transforms
@@ -567,3 +570,4 @@ if __name__ == '__main__':
 
 # for testing (deleter later): models\model_LinearModel_5e-32bs-0.005lr-cls_1746209107.30725.pt
 # Project\models\model_Net_250e-64bs-0.005lr-100cls_1745839241.032571.pt
+# Project\models\super_scale\model_Net_300e-64bs-0.008lr-20cls_1745849542.993408.pt
