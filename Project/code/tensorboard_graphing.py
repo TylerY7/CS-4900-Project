@@ -12,7 +12,7 @@ import time
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-log_dir = os.path.join(base_dir, 'runs')
+log_dir = os.path.join(base_dir, '../runs')
 
 # make sure path can be found, otherwise exit
 if not os.path.exists(log_dir):

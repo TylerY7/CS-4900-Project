@@ -22,10 +22,8 @@ from linear_model import LinearModel
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-runs_dir = os.path.join(base_dir, 'runs/CIFAR100')
-models_dir = os.path.join(base_dir, 'models')
-dataset_path = os.path.join(base_dir, 'Dataset')
-sys.path.append(dataset_path)
+runs_dir = os.path.join(base_dir, '../runs/CIFAR100')
+models_dir = os.path.join(base_dir, '../models')
 
 from dataset_download_superclass import CIFAR100Custom
 
@@ -64,7 +62,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
     model_class = MODEL_MAP[model_name]
     model = model_class(output_classes)
     model.to(device)
-    writer = SummaryWriter(runs_dir + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(lr) + 'lr-' + output_classes + 'cls_' + timestamp)
+    writer = SummaryWriter(runs_dir + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(lr) + 'lr-' + str(output_classes) + 'cls_' + timestamp)
 
     criterion = nn.CrossEntropyLoss()
     print(f'learning_rate={lr}')
@@ -248,7 +246,7 @@ if __name__ == '__main__':
                                transform=transforms.ToTensor(), label_type=label_type)
 
     # Path for saving/loading model
-    PATH = models_dir + '/model_' + model_name + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(learning_rate) + 'lr-' + 'cls_' + timestamp + '.pt'
+    PATH = models_dir + '/model_' + model_name + '_' + str(epochs) + 'e-' + str(batch_size) + 'bs-' + str(learning_rate) + 'lr-' + 'cls_' + timestamp + '.pt'
 
     # runs train function
     train(epochs, batch_size, learning_rate, train_dataset, PATH, model_name, num_classes)

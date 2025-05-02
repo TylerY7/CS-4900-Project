@@ -12,8 +12,6 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 # Append folder to path so python can find the module to import
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-dataset_path = os.path.join(base_dir, 'old_stuff/Dataset')
-sys.path.append(dataset_path)
 
 import dataset_download
 import argparse
