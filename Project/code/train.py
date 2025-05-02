@@ -70,9 +70,6 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
 
     # Learning rate scheduler
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
-
-    # used to compare and find lowest validation loss
-    lowest_v_loss = float('inf')
     
     # training loop
     for epoch in range(epochs):
@@ -110,7 +107,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         print(f'[{epoch + 1}] loss: {avg_loss:.3f} | accuracy: {accuracy:.2f}%')
 
         # function that performs validation
-        lowest_v_loss = validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss)
+        validate(epoch, model, writer, val_loader, avg_loss)
 
         writer.add_scalar('Training loss', avg_loss, epoch)
         writer.add_scalar('Training accuracy', accuracy, epoch)
@@ -130,7 +127,7 @@ def train(epochs, batch_size, lr, dataset, path, model_name, output_classes):
         'num_classes': output_classes
         }, path)
 
-def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
+def validate(epoch, model, writer, val_loader, avg_loss):
     """
     Measures model's training performance. 
     Validation is performed each epoch during training method and uses same arguments provided for training method.
@@ -142,10 +139,6 @@ def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
         writer (SummaryWriter): For saving data in a tensor
         val_loader (DataLoader): Loads datasets for CIFAR100
         avg_loss (float): Average loss during training
-        lowest_v_loss (float): Used to compare and find lowest validation loss
-
-    Returns:
-        float: returns value returned by find_lowest_v_loss
     """
     # sets model to evalution mode
     model.eval()
@@ -171,23 +164,6 @@ def validate(epoch, model, writer, val_loader, avg_loss, lowest_v_loss):
     # records and graphs training vs validation loss
     writer.add_scalars("Training vs. validation loss", {"Training": avg_loss, "Validation": avg_v_loss}, epoch)
 
-    # updates value of lowest_v_loss
-    return find_lowest_v_loss(avg_v_loss, lowest_v_loss)
-
-# finds lowest validation loss
-def find_lowest_v_loss(avg_v_loss, lowest_v_loss):
-    """_summary_
-
-    Args:
-        avg_v_loss (float): current average loss found during validation
-        lowest_v_loss (float): current lowest loss found during validation
-
-    Returns:
-        float: lowest loss, or average loss replaces current lowest loss if it is lower
-    """
-    if avg_v_loss < lowest_v_loss:
-            lowest_v_loss = avg_v_loss
-    return lowest_v_loss
 
 if __name__ == '__main__':
 
