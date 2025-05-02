@@ -21,8 +21,16 @@ and recorded in runs for later viewing on graphs. To see these graphs after trai
 run tensorboard_graphing.py.  
 When finishing training, overall accuracy will be printed. 
 
-Uses models directory in Project directory to save models after finishing training.
-Uses runs directory in Project directory to save information for visual graphing with TensorBoard. 
+Code uses models directory in Project directory to save models after finishing training.
+Saved models contain information such as type of model trained, batch size, learning rate, etc
+as part of their name.
+
+Model name example:
+model_Net_50e-64bs-0.005lr-100cls_1746140555.960078.pt
+Name signifies CNN model trained with 50 epochs, batch size of 64, a learning rate of 0.005,
+and 100 output classes.
+
+Code uses runs directory in Project directory to save information for visual graphing with TensorBoard. 
 """
 # Import necessary modules
 import argparse
