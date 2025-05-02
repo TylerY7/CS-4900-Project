@@ -11,7 +11,7 @@ Note: the string provided as model path must start with models\\ so that the cor
 """
 import torch
 import torchvision.transforms as transforms
-import torchvision
+from torchvision import datasets
 from torch.utils.data import DataLoader
 from model_cnn import Net
 from linear_model import LinearModel
@@ -25,7 +25,6 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 base_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(base_dir)
 
-import dataset_download
 import argparse
 
 
@@ -455,7 +454,13 @@ def test(model_path, batch_size, evaluate_only_super):
     ])
     
     # Load test dataset
-    test_dataset = dataset_download.download_test_dataset(transform)
+   # test_dataset = dataset_download.download_test_dataset(transform)
+    test_dataset = datasets.CIFAR100(
+        root='./data',
+        train=False,
+        download=True,
+        transform=transform
+    )
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     classes = get_classes(test_dataset)
 
