@@ -1,11 +1,18 @@
 """
-Code for linear model, trained with train.py
+Linear model for use in image classification. Model takes an input image, flattens it into a 1D tensor, and passes it 
+through fully connected layers to make predictions on classification.
 """
 import torch
 import torch.nn as nn
 
 class LinearModel(nn.Module):
     def __init__(self, num_classes):  
+        """
+        Creates linear model with given output classes. Defines fully connected layers and mapping.
+
+        Args:
+            num_classes (int): number of output classes for classification
+        """
         super(LinearModel, self).__init__()
         # Flatten the input image (3x32x32) to 1D (3072)
         self.flatten = nn.Flatten()
@@ -16,6 +23,15 @@ class LinearModel(nn.Module):
         self.fc5 = nn.Linear(128, num_classes)    
 
     def forward(self, x):
+        """
+        Performs forward pass and feeds input through model layers.
+
+        Args:
+            x (torch.Tensor): input tensor with image
+
+        Returns:
+            x (torch.Tensor): output tensor containing logits of shape
+        """
         x = self.flatten(x)
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))

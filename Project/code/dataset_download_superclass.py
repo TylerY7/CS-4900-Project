@@ -10,9 +10,16 @@ from torch.utils.data import random_split, DataLoader
 class CIFAR100Custom(CIFAR100):
     def __init__(self, root, train=True, transform=None, target_transform=None,
                  download=False, label_type='fine'):
+        """
+        Downloads dataset and saves fine and coarse labels.
+
+        Args:
+            CIFAR100 (CIFAR100): CIFAR100 dataset
+        """
         super().__init__(root=root, train=train, transform=transform,
                          target_transform=target_transform, download=download)
 
+        # saves in data directory
         filename = self.train_list[0][0] if train else self.test_list[0][0]
         filepath = os.path.join(self.root, self.base_folder, filename)
 

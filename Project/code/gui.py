@@ -84,6 +84,17 @@ model.eval()
 
 # Make Prediction
 def predict_image(path, top_k=5):
+    """
+    Function that makes predictions for image at provided file path by running it through
+    the saved model.
+
+    Args:
+        path (string): file path of image
+        top_k (int): number of top predictions to return. Defaults to 5.
+
+    Returns:
+        top_predictions (list): list of top predictions 
+    """
     image = Image.open(path).convert('RGB')
     input_tensor = transform(image).unsqueeze(0).to(device)
 
@@ -136,12 +147,21 @@ label.grid(row=40, columnspan=4)
 panel = None
 
 def openfilename():
+    """
+    Used to open file dialog for image selection.
+
+    Returns:
+        filename (string): name of file selected
+    """
     # open file dialog box to select image
     # The dialogue box has a title "Open"
     filename = filedialog.askopenfilename(title='Open')
     return filename
 
 def open_img():
+    """
+    Used for selecting an image, and displaying both the image and the model's top predictions for classification.
+    """
     global panel
     # Select the Image name from a folder
     x = openfilename()
